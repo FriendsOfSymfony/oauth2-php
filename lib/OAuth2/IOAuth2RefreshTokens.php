@@ -2,6 +2,8 @@
 
 namespace OAuth2;
 
+use OAuth2\Model\IOAuth2Client;
+
 /**
  * Storage engines that want to support refresh tokens should
  * implement this interface.
