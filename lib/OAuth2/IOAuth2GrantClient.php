@@ -2,6 +2,8 @@
 
 namespace OAuth2;
 
+use OAuth2\Model\IOAuth2Client;
+
 /**
  * Storage engines that support the "Client Credentials"
  * grant type should implement this interface
