@@ -745,7 +745,7 @@ class OAuth2 {
     $authCode = $this->storage->getAuthCode($input["code"]);
 
     // Check the code exists
-    if ($authCode === NULL || $client->getPublicId() != $authCode->getClientId()) {
+    if ($authCode === NULL || $client->getPublicId() !== $authCode->getClientId()) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, "Code doesn't exist or is invalid for the client");
     }
 
@@ -811,7 +811,7 @@ class OAuth2 {
 
     $token = $this->storage->getRefreshToken($input["refresh_token"]);
 
-    if ($token === NULL || $client->getId() != $token->getClientId()) {
+    if ($token === NULL || $client->getPublicId() !== $token->getClientId()) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, 'Invalid refresh token');
     }
 
