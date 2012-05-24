@@ -610,7 +610,7 @@ class OAuth2 {
    *
    * @ingroup oauth2_section_7
    */
-  private function checkScope($required_scope, $available_scope) {
+  protected function checkScope($required_scope, $available_scope) {
     // The required scope should match or be a subset of the available scope
     if (!is_array($required_scope)) {
       $required_scope = explode(' ', trim($required_scope));
