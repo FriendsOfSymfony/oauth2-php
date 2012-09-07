@@ -705,8 +705,8 @@ class OAuth2 {
         $stored = $this->grantAccessTokenRefreshToken($client, $input);
         break;
       default:
-        if ($uri = filter_var($input["grant_type"], FILTER_VALIDATE_URL)) {
-          $stored = $this->grantAccessTokenExtension($client, $input, $uri);
+        if (filter_var($input["grant_type"], FILTER_VALIDATE_URL)) {
+          $stored = $this->grantAccessTokenExtension($client, $inputData, $authHeaders);
         } else {
           throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Invalid grant_type parameter or parameter missing');
         }
@@ -828,12 +828,12 @@ class OAuth2 {
     );
   }
 
-  protected function grantAccessTokenExtension(IOAuth2Client $client, array $input) {
+  protected function grantAccessTokenExtension(IOAuth2Client $client, array $inputData, array $authHeaders) {
     if (!($this->storage instanceof IOAuth2GrantExtension)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
-    $uri = filter_var($input["grant_type"], FILTER_VALIDATE_URL);
-    $stored = $this->storage->checkGrantExtension($uri, $inputData, $authHeaders);
+    $uri = filter_var($inputData["grant_type"], FILTER_VALIDATE_URL);
+    $stored = $this->storage->checkGrantExtension($client, $uri, $inputData, $authHeaders);
 
     if ($stored === FALSE) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
