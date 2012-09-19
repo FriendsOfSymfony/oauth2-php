@@ -194,7 +194,7 @@ class OAuth2 {
    * NB: For extensibility, the grant type can be a URI
    * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.5
    */
-  const GRANT_TYPE_REGEXP = '#^(authorization_code|token|password|client_credentials|refresh_token|http://.*)$#';
+  const GRANT_TYPE_REGEXP = '#^(authorization_code|token|password|client_credentials|refresh_token|https?://.*)$#';
 
   /**
    * @}
