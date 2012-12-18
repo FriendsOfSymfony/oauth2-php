@@ -1187,18 +1187,17 @@ class OAuth2 {
    * @see OAuth2::genAuthCode()
    */
   protected function genAccessToken() {
-    if (function_exists('openssl_random_pseudo_bytes') && 0 !== stripos(PHP_OS, 'win')) {
-      $bytes = openssl_random_pseudo_bytes(32, $strong);
-
+    if (file_exists('/dev/urandom')) { // Get 100 bytes of random data
+      $randomData = file_get_contents('/dev/urandom', false, null, 0, 100);
+    } elseif (function_exists('openssl_random_pseudo_bytes')) { // Get 100 bytes of pseudo-random data
+      $bytes = openssl_random_pseudo_bytes(100, $strong);
       if (true === $strong && false !== $bytes) {
-        return rtrim(strtr(base64_encode($bytes), '+/', '-_'), '=');
+        $randomData = $bytes;
       }
     }
-
-    if (file_exists('/dev/urandom')) { // Get 100 bytes of random data
-      $randomData = file_get_contents('/dev/urandom', false, null, 0, 100).uniqid(mt_rand(), true);
-    } else {
-      $randomData = mt_rand().mt_rand().mt_rand().mt_rand().microtime(true).uniqid(mt_rand(), true);
+    // Last resort: mt_rand
+    if (empty($randomData)) { // Get 108 bytes of (pseudo-random, insecure) data
+      $randomData = mt_rand().mt_rand().mt_rand().uniqid(mt_rand(), true).microtime(true).uniqid(mt_rand(), true);
     }
     return rtrim(strtr(base64_encode(hash('sha256', $randomData)), '+/', '-_'), '=');
   }
