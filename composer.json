@@ -2,6 +2,7 @@
     "name": "friendsofsymfony/oauth2-php",
     "type": "library",
     "description": "OAuth2 library",
+    "license": "MIT",
     "keywords": ["oauth", "oauth2"],
     "homepage": "https://github.com/FriendsOfSymfony/oauth2-php",
     "authors": [
