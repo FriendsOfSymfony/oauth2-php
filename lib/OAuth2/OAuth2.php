@@ -723,7 +723,12 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.');
     }
 
-    $token = $this->createAccessToken($client, $stored['data'], $stored['scope']);
+    // grant all possible scopes if the request doesn't pass in a scope value.
+    if (!$input['scope']) {
+        $input['scope'] = $stored['scope'];
+    }
+
+    $token = $this->createAccessToken($client, $stored['data'], $input['scope']);
 
     return new Response(json_encode($token), 200, $this->getJsonHeaders());
   }
