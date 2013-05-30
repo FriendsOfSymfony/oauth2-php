@@ -1037,9 +1037,9 @@ class OAuth2 {
       'state' => NULL,
     );
 
-	$result = array(
-        "query" => array(),
-	);
+    $result = array(
+      'query' => array(),
+    );
     if ($params["state"]) {
       $result["query"]["state"] = $params["state"];
     }
@@ -1047,7 +1047,7 @@ class OAuth2 {
     if ($is_authorized === FALSE) {
       throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_USER_DENIED, "The user denied access to your application", $params["state"]);
     }
-    else {
+    elseif(isset($params["response_type"])) {
       if ($params["response_type"] == self::RESPONSE_TYPE_AUTH_CODE) {
         $result["query"]["code"] = $this->createAuthCode($params["client"], $data, $params["redirect_uri"], $scope);
       }
