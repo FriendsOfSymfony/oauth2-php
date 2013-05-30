@@ -1037,6 +1037,9 @@ class OAuth2 {
       'state' => NULL,
     );
 
+	$result = array(
+        "query" => array(),
+	);
     if ($params["state"]) {
       $result["query"]["state"] = $params["state"];
     }
