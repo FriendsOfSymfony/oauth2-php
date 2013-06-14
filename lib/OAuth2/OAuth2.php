@@ -1135,8 +1135,14 @@ class OAuth2 {
       "scope"        => $scope,
     );
 
-    $this->storage->createAccessToken($token["access_token"], $client, $data, time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME), $scope);
+    if (self::CONFIG_ACCESS_LIFETIME !== false) {
+      $expires = time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME);
+    } else {
+      $expires = null;
+    }
 
+    $this->storage->createAccessToken($token["access_token"], $client, $data, $expires, $scope);
+    
     // Issue a refresh token also, if we support them
     if ($this->storage instanceof IOAuth2RefreshTokens) {
       $token["refresh_token"] = $this->genAccessToken();
