@@ -1134,13 +1134,22 @@ class OAuth2 {
       "token_type"   => $this->getVariable(self::CONFIG_TOKEN_TYPE),
       "scope"        => $scope,
     );
-
-    $this->storage->createAccessToken($token["access_token"], $client, $data, time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME), $scope);
+    if ($this->getVariable(self::CONFIG_ACCESS_LIFETIME) === false) {
+      $expires = null;
+    } else {
+      $expires = time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME);
+    }
+    $this->storage->createAccessToken($token["access_token"], $client, $data, $expires, $scope);
 
     // Issue a refresh token also, if we support them
     if ($this->storage instanceof IOAuth2RefreshTokens) {
       $token["refresh_token"] = $this->genAccessToken();
-      $this->storage->createRefreshToken($token["refresh_token"], $client, $data, time() + $this->getVariable(self::CONFIG_REFRESH_LIFETIME), $scope);
+      if ($this->getVariable(self::CONFIG_REFRESH_LIFETIME) === false) {
+        $expires = null;
+      } else {
+        $expires = time() + $this->getVariable(self::CONFIG_REFRESH_LIFETIME);
+      }
+      $this->storage->createRefreshToken($token["refresh_token"], $client, $data, $expires, $scope);
 
       // If we've granted a new refresh token, expire the old one
       if ($this->oldRefreshToken) {
@@ -1170,7 +1179,13 @@ class OAuth2 {
    */
   private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = NULL) {
     $code = $this->genAuthCode();
-    $this->storage->createAuthCode($code, $client, $data, $redirect_uri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);
+    if ($this->getVariable(self::CONFIG_AUTH_LIFETIME) === false) {
+      $expires = null;
+    } else {
+      $expires = time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME);
+    }
+
+    $this->storage->createAuthCode($code, $client, $data, $redirect_uri, $expires, $scope);
     return $code;
   }
 
