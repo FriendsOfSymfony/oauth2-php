@@ -914,6 +914,9 @@ class OAuth2 {
     }
 
     $inputData = $request->query->all();
+    if (!$inputData) {
+      $inputData = $request->get('fos_oauth_server_authorize_form');
+    }
     $input = filter_var_array($inputData, $filters);
 
     // Make sure a valid client id was supplied (we can not redirect because we were unable to verify the URI)
