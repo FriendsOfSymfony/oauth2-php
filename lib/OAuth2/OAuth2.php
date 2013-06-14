@@ -44,8 +44,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Debug, coding style clean up and documented by Edison Wong <hswong3i@pantarei-design.com>.
  * @author Refactored (including separating from raw POST/GET) and updated to draft v20 by David Rochwerger <catch.dave@gmail.com>.
  */
-class OAuth2
-{
+class OAuth2 {
+
   /**
    * Array of persistent variables stored.
    */
@@ -335,8 +335,7 @@ class OAuth2
    *
    * @param $config - An associative array as below of config options. See CONFIG_* constants.
    */
-  public function __construct(IOAuth2Storage $storage, $config = array())
-  {
+  public function __construct(IOAuth2Storage $storage, $config = array()) {
     $this->storage = $storage;
 
     // Configuration options
@@ -349,8 +348,7 @@ class OAuth2
   /**
    * Default configuration options are specified here.
    */
-  protected function setDefaultOptions()
-  {
+  protected function setDefaultOptions() {
     $this->conf = array(
       self::CONFIG_ACCESS_LIFETIME        => self::DEFAULT_ACCESS_TOKEN_LIFETIME,
       self::CONFIG_REFRESH_LIFETIME       => self::DEFAULT_REFRESH_TOKEN_LIFETIME,
@@ -379,8 +377,7 @@ class OAuth2
    * @return
    *   The value of the variable.
    */
-  public function getVariable($name, $default = NULL)
-  {
+  public function getVariable($name, $default = NULL) {
     $name = strtolower($name);
 
     return isset($this->conf[$name]) ? $this->conf[$name] : $default;
@@ -394,12 +391,10 @@ class OAuth2
    * @param $value
    *   The value to set.
    */
-  public function setVariable($name, $value)
-  {
+  public function setVariable($name, $value) {
     $name = strtolower($name);
 
     $this->conf[$name] = $value;
-
     return $this;
   }
 
@@ -431,8 +426,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_7
    */
-  public function verifyAccessToken($token_param, $scope = NULL)
-  {
+  public function verifyAccessToken($token_param, $scope = NULL) {
     $tokenType = $this->getVariable(self::CONFIG_TOKEN_TYPE);
     $realm = $this->getVariable(self::CONFIG_WWW_REALM);
 
@@ -478,8 +472,8 @@ class OAuth2
    * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.2
    * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.3
    */
-  public function getBearerToken(Request $request = NULL, $removeFromRequest = false)
-  {
+  public function getBearerToken(Request $request = NULL, $removeFromRequest = false) {
+
     if ($request === NULL) {
       $request = Request::createFromGlobals();
     }
@@ -616,8 +610,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_7
    */
-  protected function checkScope($required_scope, $available_scope)
-  {
+  protected function checkScope($required_scope, $available_scope) {
     // The required scope should match or be a subset of the available scope
     if (!is_array($required_scope)) {
       $required_scope = explode(' ', trim($required_scope));
@@ -647,8 +640,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_4
    */
-  public function grantAccessToken(Request $request = NULL)
-  {
+  public function grantAccessToken(Request $request = NULL) {
     $filters = array(
       "grant_type" => array("filter" => FILTER_VALIDATE_REGEXP, "options" => array("regexp" => self::GRANT_TYPE_REGEXP), "flags" => FILTER_REQUIRE_SCALAR),
       "scope" => array("flags" => FILTER_REQUIRE_SCALAR),
@@ -736,8 +728,8 @@ class OAuth2
     return new Response(json_encode($token), 200, $this->getJsonHeaders());
   }
 
-  protected function grantAccessTokenAuthCode(IOAuth2Client $client, array $input)
-  {
+  protected function grantAccessTokenAuthCode(IOAuth2Client $client, array $input) {
+
     if (!($this->storage instanceof IOAuth2GrantCode)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
@@ -772,8 +764,7 @@ class OAuth2
     );
   }
 
-  protected function grantAccessTokenUserCredentials(IOAuth2Client $client, array $input)
-  {
+  protected function grantAccessTokenUserCredentials(IOAuth2Client $client, array $input) {
     if (!($this->storage instanceof IOAuth2GrantUser)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
@@ -791,8 +782,7 @@ class OAuth2
     return $stored;
   }
 
-  protected function grantAccessTokenClientCredentials(IOAuth2Client $client, array $input, array $clientCredentials)
-  {
+  protected function grantAccessTokenClientCredentials(IOAuth2Client $client, array $input, array $clientCredentials) {
     if (!($this->storage instanceof IOAuth2GrantClient)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
@@ -810,8 +800,7 @@ class OAuth2
     return $stored;
   }
 
-  protected function grantAccessTokenRefreshToken(IOAuth2Client $client, array $input)
-  {
+  protected function grantAccessTokenRefreshToken(IOAuth2Client $client, array $input) {
     if (!($this->storage instanceof IOAuth2RefreshTokens)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
@@ -839,8 +828,7 @@ class OAuth2
     );
   }
 
-  protected function grantAccessTokenExtension(IOAuth2Client $client, array $inputData, array $authHeaders)
-  {
+  protected function grantAccessTokenExtension(IOAuth2Client $client, array $inputData, array $authHeaders) {
     if (!($this->storage instanceof IOAuth2GrantExtension)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
@@ -874,18 +862,19 @@ class OAuth2
    *
    * @ingroup oauth2_section_2
    */
-  protected function getClientCredentials(array $inputData, array $authHeaders)
-  {
+  protected function getClientCredentials(array $inputData, array $authHeaders) {
+
     // Basic Authentication is used
     if (!empty($authHeaders['PHP_AUTH_USER'])) {
       return array($authHeaders['PHP_AUTH_USER'], $authHeaders['PHP_AUTH_PW']);
-    } elseif (empty($inputData['client_id'])) { // No credentials were specified
+    }
+    elseif (empty($inputData['client_id'])) { // No credentials were specified
        throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'Client id was not found in the headers or body');
-    } else {
+    }
+    else {
       // This method is not recommended, but is supported by specification
       $client_id = $inputData['client_id'];
       $client_secret = isset($inputData['client_secret']) ? $inputData['client_secret'] : NULL;
-
       return array($client_id, $client_secret);
     }
   }
@@ -911,8 +900,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_3
    */
-  protected function getAuthorizeParams(Request $request = NULL)
-  {
+  protected function getAuthorizeParams(Request $request = NULL) {
     $filters = array(
       "client_id" => array("filter" => FILTER_VALIDATE_REGEXP, "options" => array("regexp" => self::CLIENT_ID_REGEXP), "flags" => FILTER_REQUIRE_SCALAR),
       "response_type" => array("flags" => FILTER_REQUIRE_SCALAR),
@@ -926,11 +914,9 @@ class OAuth2
     }
 
     $inputData = $request->query->all();
-
     if (!$inputData) {
       $inputData = $request->get('fos_oauth_server_authorize_form');
     }
-
     $input = filter_var_array($inputData, $filters);
 
     // Make sure a valid client id was supplied (we can not redirect because we were unable to verify the URI)
@@ -956,7 +942,7 @@ class OAuth2
         if (!$this->storage instanceof IOAuth2GrantCode) {
             throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
         }
-    } elseif ($input['response_type'] == self::RESPONSE_TYPE_ACCESS_TOKEN) {
+    } else if ($input['response_type'] == self::RESPONSE_TYPE_ACCESS_TOKEN) {
         if (!$this->storage instanceof IOAuth2GrantImplicit) {
             throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
         }
@@ -980,8 +966,8 @@ class OAuth2
     ) + $input;
   }
 
-  protected function getRedirectUri($redirect_uri, IOAuth2Client $client)
-  {
+  protected function getRedirectUri($redirect_uri, IOAuth2Client $client) {
+
     // Make sure a valid redirect_uri was supplied. If specified, it must match the stored URI.
     // @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-3.1.2
     // @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.2.1
@@ -1044,8 +1030,8 @@ class OAuth2
    *
    * @ingroup oauth2_section_4
    */
-  public function finishClientAuthorization($is_authorized, $data = NULL, Request $request = NULL, $scope = NULL)
-  {
+  public function finishClientAuthorization($is_authorized, $data = NULL, Request $request = NULL, $scope = NULL) {
+
     // In theory, this could be POSTed by a 3rd-party (because we are not
     // internally enforcing NONCEs, etc)
     $params = $this->getAuthorizeParams($request);
@@ -1060,10 +1046,12 @@ class OAuth2
 
     if ($is_authorized === FALSE) {
       throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_USER_DENIED, "The user denied access to your application", $params["state"]);
-    } else {
+    }
+    else {
       if ($params["response_type"] == self::RESPONSE_TYPE_AUTH_CODE) {
         $result["query"]["code"] = $this->createAuthCode($params["client"], $data, $params["redirect_uri"], $scope);
-      } elseif ($params["response_type"] == self::RESPONSE_TYPE_ACCESS_TOKEN) {
+      }
+      elseif ($params["response_type"] == self::RESPONSE_TYPE_ACCESS_TOKEN) {
         $result["fragment"] = $this->createAccessToken($params["client"], $data, $scope);
       }
     }
@@ -1086,8 +1074,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_4
    */
-  private function createRedirectUriCallbackResponse($redirect_uri, $params)
-  {
+  private function createRedirectUriCallbackResponse($redirect_uri, $params) {
     return new Response('', 302, array(
       'Location' => $this->buildUri($redirect_uri, $params),
     ));
@@ -1106,8 +1093,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_4
    */
-  private function buildUri($uri, $params)
-  {
+  private function buildUri($uri, $params) {
     $parse_url = parse_url($uri);
 
     // Add our params to the parsed uri
@@ -1144,8 +1130,7 @@ class OAuth2
    * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5
    * @ingroup oauth2_section_5
    */
-  public function createAccessToken(IOAuth2Client $client, $data, $scope=NULL)
-  {
+  public function createAccessToken(IOAuth2Client $client, $data, $scope=NULL) {
     $token = array(
       "access_token" => $this->genAccessToken(),
       "expires_in"   => $this->getVariable(self::CONFIG_ACCESS_LIFETIME),
@@ -1186,11 +1171,9 @@ class OAuth2
    *
    * @ingroup oauth2_section_4
    */
-  private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = NULL)
-  {
+  private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = NULL) {
     $code = $this->genAuthCode();
     $this->storage->createAuthCode($code, $client, $data, $redirect_uri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);
-
     return $code;
   }
 
@@ -1206,8 +1189,7 @@ class OAuth2
    * @ingroup oauth2_section_4
    * @see OAuth2::genAuthCode()
    */
-  protected function genAccessToken()
-  {
+  protected function genAccessToken() {
     if (file_exists('/dev/urandom')) { // Get 100 bytes of random data
       $randomData = file_get_contents('/dev/urandom', false, null, 0, 100);
     } elseif (function_exists('openssl_random_pseudo_bytes')) { // Get 100 bytes of pseudo-random data
@@ -1220,7 +1202,6 @@ class OAuth2
     if (empty($randomData)) { // Get 108 bytes of (pseudo-random, insecure) data
       $randomData = mt_rand().mt_rand().mt_rand().uniqid(mt_rand(), true).microtime(true).uniqid(mt_rand(), true);
     }
-
     return rtrim(strtr(base64_encode(hash('sha256', $randomData)), '+/', '-_'), '=');
   }
 
@@ -1236,8 +1217,7 @@ class OAuth2
    * @ingroup oauth2_section_4
    * @see OAuth2::genAccessToken()
    */
-  protected function genAuthCode()
-  {
+  protected function genAuthCode() {
     return $this->genAccessToken(); // let's reuse the same scheme for token generation
   }
 
@@ -1256,8 +1236,7 @@ class OAuth2
    * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-2.4.1
    * @ingroup oauth2_section_2
    */
-  protected function getAuthorizationHeader(Request $request)
-  {
+  protected function getAuthorizationHeader(Request $request) {
     return array(
       'PHP_AUTH_USER' => $request->server->get('PHP_AUTH_USER'),
       'PHP_AUTH_PW'   => $request->server->get('PHP_AUTH_PW'),
@@ -1272,8 +1251,7 @@ class OAuth2
    *
    * @ingroup oauth2_section_5
    */
-  private function getJsonHeaders()
-  {
+  private function getJsonHeaders() {
     return array(
       'Content-Type' => 'application/json;charset=UTF-8',
       'Cache-Control' => 'no-store',
@@ -1286,8 +1264,7 @@ class OAuth2
    * @param string $inputUri
    * @param string $storedUri
    */
-  protected function validateRedirectUri($inputUri, $storedUris)
-  {
+  protected function validateRedirectUri($inputUri, $storedUris) {
     if (!$inputUri || !$storedUris) {
       return false; // if either one is missing, assume INVALID
     }
@@ -1299,7 +1276,6 @@ class OAuth2
         return true;
       }
     }
-
     return false;
   }
 }
