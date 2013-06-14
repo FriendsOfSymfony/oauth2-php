@@ -927,7 +927,6 @@ class OAuth2
 
     $inputData = $request->query->all();
 
-    $inputData = $request->query->all();
     if (!$inputData) {
       $inputData = $request->get('fos_oauth_server_authorize_form');
     }
