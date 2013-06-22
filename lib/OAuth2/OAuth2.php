@@ -1187,7 +1187,7 @@ class OAuth2 {
    * @see OAuth2::genAuthCode()
    */
   protected function genAccessToken() {
-    if (file_exists('/dev/urandom')) { // Get 100 bytes of random data
+    if (@file_exists('/dev/urandom')) { // Get 100 bytes of random data
       $randomData = file_get_contents('/dev/urandom', false, null, 0, 100);
     } elseif (function_exists('openssl_random_pseudo_bytes')) { // Get 100 bytes of pseudo-random data
       $bytes = openssl_random_pseudo_bytes(100, $strong);
