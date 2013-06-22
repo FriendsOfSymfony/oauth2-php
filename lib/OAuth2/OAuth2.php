@@ -734,7 +734,7 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
-    if (!in_array(self::GRANT_TYPE_AUTH_CODE, $client->getAllowedGrantTypes()) {
+    if (!in_array(self::GRANT_TYPE_AUTH_CODE, $client->getAllowedGrantTypes()) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
@@ -773,7 +773,7 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
-    if (!in_array(self::GRANT_TYPE_USER_CREDENTIALS, $client->getAllowedGrantTypes()) {
+    if (!in_array(self::GRANT_TYPE_USER_CREDENTIALS, $client->getAllowedGrantTypes()) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
@@ -795,7 +795,7 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
-    if (!in_array(self::GRANT_TYPE_CLIENT_CREDENTIALS, $client->getAllowedGrantTypes()) {
+    if (!in_array(self::GRANT_TYPE_CLIENT_CREDENTIALS, $client->getAllowedGrantTypes()) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
@@ -817,7 +817,7 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
-    if (!in_array(self::GRANT_TYPE_REFRESH_TOKEN, $client->getAllowedGrantTypes()) {
+    if (!in_array(self::GRANT_TYPE_REFRESH_TOKEN, $client->getAllowedGrantTypes()) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
