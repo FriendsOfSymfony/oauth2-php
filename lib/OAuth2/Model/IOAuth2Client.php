@@ -6,6 +6,5 @@ interface IOAuth2Client {
 
     public function getPublicId();
     public function getRedirectUris();
-    public function getAllowedGrantTypes();
 }
 
