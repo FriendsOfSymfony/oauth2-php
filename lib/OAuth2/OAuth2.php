@@ -734,6 +734,10 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
+    if (!in_array(self::GRANT_TYPE_AUTH_CODE, $client->getAllowedGrantTypes()) ) {
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
+    }
+
     if (!$input["code"]) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Missing parameter. "code" is required');
     }
@@ -769,6 +773,10 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
+    if (!in_array(self::GRANT_TYPE_USER_CREDENTIALS, $client->getAllowedGrantTypes()) ) {
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
+    }
+
     if (!$input["username"] || !$input["password"]) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Missing parameters. "username" and "password" required');
     }
@@ -787,6 +795,10 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
+    if (!in_array(self::GRANT_TYPE_CLIENT_CREDENTIALS, $client->getAllowedGrantTypes()) ) {
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
+    }
+
     if (empty($clientCredentials[1])) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client_secret is mandatory for the "client_credentials" grant type');
     }
@@ -802,6 +814,10 @@ class OAuth2 {
 
   protected function grantAccessTokenRefreshToken(IOAuth2Client $client, array $input) {
     if (!($this->storage instanceof IOAuth2RefreshTokens)) {
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
+    }
+
+    if (!in_array(self::GRANT_TYPE_REFRESH_TOKEN, $client->getAllowedGrantTypes()) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 
@@ -1138,7 +1154,7 @@ class OAuth2 {
     $this->storage->createAccessToken($token["access_token"], $client, $data, time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME), $scope);
 
     // Issue a refresh token also, if we support them
-    if ($this->storage instanceof IOAuth2RefreshTokens) {
+    if ($this->storage instanceof IOAuth2RefreshTokens && in_array(self::GRANT_TYPE_REFRESH_TOKEN, $client->getAllowedGrantTypes())) {
       $token["refresh_token"] = $this->genAccessToken();
       $this->storage->createRefreshToken($token["refresh_token"], $client, $data, time() + $this->getVariable(self::CONFIG_REFRESH_LIFETIME), $scope);
 
