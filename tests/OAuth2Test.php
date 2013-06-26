@@ -358,7 +358,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     )));
 
     $this->assertSame(array(
-      'content-type' => array('application/json;charset=UTF-8'),
+      'content-type' => array('application/json'),
       'cache-control' => array('no-store, private'),
       'pragma' => array('no-cache'),
     ), array_diff_key(
@@ -423,7 +423,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     )));
 
     $this->assertSame(array(
-      'content-type' => array('application/json;charset=UTF-8'),
+      'content-type' => array('application/json'),
       'cache-control' => array('no-store, private'),
       'pragma' => array('no-cache'),
     ), array_diff_key(
@@ -457,7 +457,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     )));
 
     $this->assertSame(array(
-      'content-type' => array('application/json;charset=UTF-8'),
+      'content-type' => array('application/json'),
       'cache-control' => array('no-store, private'),
       'pragma' => array('no-cache'),
     ), array_diff_key(
@@ -516,7 +516,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     )));
 
     $this->assertSame(array(
-      'content-type' => array('application/json;charset=UTF-8'),
+      'content-type' => array('application/json'),
       'cache-control' => array('no-store, private'),
       'pragma' => array('no-cache'),
     ), array_diff_key(

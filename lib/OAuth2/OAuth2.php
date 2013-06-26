@@ -1250,7 +1250,7 @@ class OAuth2 {
    */
   private function getJsonHeaders() {
     return array(
-      'Content-Type' => 'application/json;charset=UTF-8',
+      'Content-Type' => 'application/json',
       'Cache-Control' => 'no-store',
       'Pragma' => 'no-cache',
     );
