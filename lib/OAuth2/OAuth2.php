@@ -713,10 +713,10 @@ class OAuth2 {
     }
 
     if (!is_array($stored)) {
-      $stored = array();
+      $stored = array('scope' => $this->getVariable(self::CONFIG_SUPPORTED_SCOPES, null));
     }
 
-    $stored += array('scope' => NULL, 'data' => NULL);
+    $stored += array('scope' => null, 'data' => null);
 
     // Check scope, if provided
     if ($input["scope"] && (!isset($stored["scope"]) || !$this->checkScope($input["scope"], $stored["scope"]))) {
