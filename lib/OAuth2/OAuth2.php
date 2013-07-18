@@ -362,7 +362,7 @@ class OAuth2 {
       self::CONFIG_ENFORCE_INPUT_REDIRECT => TRUE,
 
       self::CONFIG_ENFORCE_STATE          => FALSE,
-      self::CONFIG_SUPPORTED_SCOPES       => array(), // This is expected to be passed in on construction. Scopes can be an aribitrary string.
+      self::CONFIG_SUPPORTED_SCOPES       => null, // This is expected to be passed in on construction. Scopes can be an aribitrary string.
     );
   }
 
