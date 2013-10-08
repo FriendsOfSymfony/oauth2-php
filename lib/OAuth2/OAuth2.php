@@ -693,30 +693,32 @@ class OAuth2 {
     // Do the granting
     switch ($input["grant_type"]) {
       case self::GRANT_TYPE_AUTH_CODE:
-        $stored = $this->grantAccessTokenAuthCode($client, $input);
+        $stored = $this->grantAccessTokenAuthCode($client, $input); // returns array('data' => data, 'scope' => scope)
         break;
       case self::GRANT_TYPE_USER_CREDENTIALS:
-        $stored = $this->grantAccessTokenUserCredentials($client, $input);
+        $stored = $this->grantAccessTokenUserCredentials($client, $input); // returns: true || array('scope' => scope)
         break;
       case self::GRANT_TYPE_CLIENT_CREDENTIALS:
-        $stored = $this->grantAccessTokenClientCredentials($client, $input, $clientCreds);
+        $stored = $this->grantAccessTokenClientCredentials($client, $input, $clientCreds); // returns: true || array('scope' => scope)
         break;
       case self::GRANT_TYPE_REFRESH_TOKEN:
-        $stored = $this->grantAccessTokenRefreshToken($client, $input);
+        $stored = $this->grantAccessTokenRefreshToken($client, $input); // returns array('data' => data, 'scope' => scope)
         break;
       default:
         if (filter_var($input["grant_type"], FILTER_VALIDATE_URL)) {
-          $stored = $this->grantAccessTokenExtension($client, $inputData, $authHeaders);
+          $stored = $this->grantAccessTokenExtension($client, $inputData, $authHeaders); // returns: true || array('scope' => scope)
         } else {
           throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Invalid grant_type parameter or parameter missing');
         }
     }
 
     if (!is_array($stored)) {
-      $stored = array('scope' => $this->getVariable(self::CONFIG_SUPPORTED_SCOPES, null));
+        $stored = array();
     }
 
-    $stored += array('scope' => null, 'data' => null);
+    // if no scope provided to check against $input['scope'] then application defaults are set
+    // if no data is provided than null is set
+    $stored += array('scope' => $this->getVariable(self::CONFIG_SUPPORTED_SCOPES, null), 'data' => null);
 
     // Check scope, if provided
     if ($input["scope"] && (!isset($stored["scope"]) || !$this->checkScope($input["scope"], $stored["scope"]))) {
