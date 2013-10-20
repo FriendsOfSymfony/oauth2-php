@@ -1181,7 +1181,7 @@ class OAuth2 {
 
     if ($this->storage instanceof IOAuth2GrantCode) {
       if ($this->usedAuthCode) {
-        $this->storage->markAuthCodeAsUsed($this->usedAuthCode->getToken());
+        $this->storage->markAuthCodeAsUsed($this->usedAuthCode);
         unset($this->usedAuthCode);
       }
     }

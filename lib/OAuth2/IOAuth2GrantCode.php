@@ -74,7 +74,7 @@ interface IOAuth2GrantCode extends IOAuth2Storage {
      *
      * Depending on implementation it can change expiration date on auth code or remove it at all.
      *
-     * @param string $code
+     * @param IOAuth2AuthCode $auth_code
      */
-    public function markAuthCodeAsUsed($code);
+    public function markAuthCodeAsUsed(IOAuth2AuthCode $auth_code);
 }
