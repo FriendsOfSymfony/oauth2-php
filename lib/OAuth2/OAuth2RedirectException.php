@@ -47,7 +47,7 @@ class OAuth2RedirectException extends OAuth2ServerException {
    * @ingroup oauth2_section_4
    */
   public function getResponseHeaders() {
-    $params = array('query' => $this->errorData);
+    $params = array('fragment' => $this->errorData);
     return array(
         'Location' => $this->buildUri($this->redirectUri, $params),
     );
