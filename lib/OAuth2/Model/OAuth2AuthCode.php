@@ -16,5 +16,10 @@ class OAuth2AuthCode extends OAuth2Token implements IOAuth2AuthCode {
     public function getRedirectUri() {
         return $this->redirectUri;
     }
+
+    public function setExpired()
+    {
+        $this->setExpiresAt(time());
+    }
 }
 
