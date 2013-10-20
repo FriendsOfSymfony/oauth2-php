@@ -779,6 +779,8 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, "The authorization code has expired");
     }
 
+    $authCode->setExpiresAt(time());
+
     return array(
       'scope' => $authCode->getScope(),
       'data' => $authCode->getData(),
