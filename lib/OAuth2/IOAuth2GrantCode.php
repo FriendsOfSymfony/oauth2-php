@@ -68,4 +68,13 @@ interface IOAuth2GrantCode extends IOAuth2Storage {
      * @ingroup oauth2_section_4
      */
     public function createAuthCode($code, IOAuth2Client $client, $data, $redirect_uri, $expires, $scope = NULL);
+
+    /**
+     * Marks auth code as expired.
+     *
+     * Depending on implementation it can change expiration date on auth code or remove it at all.
+     *
+     * @param IOAuth2AuthCode $auth_code
+     */
+    public function markAuthCodeAsUsed(IOAuth2AuthCode $auth_code);
 }
