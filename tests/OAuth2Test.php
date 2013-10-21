@@ -324,6 +324,42 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     }
   }
   
+   /**
+   * Tests OAuth2->grantAccessToken() with same Auth code grant
+   * 
+   */
+  public function testGrantAccessTokenWithSameGrantAuthCode() {
+    $stub = new OAuth2GrantCodeStub;
+    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
+    $oauth2 = new OAuth2($stub);
+
+    $data = new \stdClass;
+
+    $response = $oauth2->finishClientAuthorization(true, $data, new Request(array(
+        'client_id' => 'blah',
+        'redirect_uri' => 'http://www.example.com/?foo=bar',
+        'response_type' => 'code',
+        'state' => '42',
+    )));
+
+    $code = $stub->getLastAuthCode();
+
+    $inputData = array('grant_type' => OAuth2::GRANT_TYPE_AUTH_CODE, 'client_id' => 'blah', 'client_secret' => 'foo', 'redirect_uri' => 'http://www.example.com/?foo=bars', 'code'=> $code->getToken());
+    $request = $this->createRequest($inputData);
+    
+    // Grant an access token with the auth code
+    $oauth2->grantAccessToken($request);
+
+    try {
+      // Grant an access token with the same auth code.
+      $oauth2->grantAccessToken($request);
+      $this->fail('The expected exception OAuth2ServerException was not thrown');
+    }
+    catch ( OAuth2ServerException $e ) {
+      $this->assertEquals(OAuth2::ERROR_INVALID_GRANT, $e->getMessage());
+    }
+  }
+  
   /**
    * Tests OAuth2->grantAccessToken() with implicit
    * 

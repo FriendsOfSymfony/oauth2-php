@@ -29,8 +29,8 @@ class OAuth2GrantCodeStub extends OAuth2StorageStub implements IOAuth2GrantCode 
     }
 
     public function markAuthCodeAsUsed($code) {
-        if(isset($authCodes[$code]))
-            unset($authCodes[$code]);
+        if(isset($this->authCodes[$code]))
+            unset($this->authCodes[$code]);
     }
 
 }
