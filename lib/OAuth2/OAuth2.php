@@ -95,6 +95,8 @@ class OAuth2 {
   const CONFIG_REFRESH_LIFETIME       = 'refresh_token_lifetime'; // The lifetime of refresh token in seconds.
   const CONFIG_AUTH_LIFETIME          = 'auth_code_lifetime';     // The lifetime of auth code in seconds.
   const CONFIG_SUPPORTED_SCOPES       = 'supported_scopes';       // Array of scopes you want to support
+  const CONFIG_SCOPES_POLICY          = 'scopes_policy';          // Policy if no scope is set. Values can be "error" or "default".
+  const CONFIG_DEFAULT_SCOPES         = 'default_scopes';         // If scope policy is set to "default", this array of scopes will be used.
   const CONFIG_TOKEN_TYPE             = 'token_type';             // Token type to respond with. Currently only "Bearer" supported.
   const CONFIG_WWW_REALM              = 'realm';
   const CONFIG_ENFORCE_INPUT_REDIRECT = 'enforce_redirect';       // Set to true to enforce redirect_uri on input for both authorize and token steps.
@@ -308,6 +310,14 @@ class OAuth2 {
   const ERROR_INVALID_SCOPE = 'invalid_scope';
 
   /**
+   * The requested scope policy is invalid, unknown, or malformed.
+   * Must be either "error" or "default"
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.3
+   */
+  const ERROR_INVALID_SCOPE_POLICY = 'invalid_scope_policy';
+
+  /**
    * The provided authorization grant is invalid, expired,
    * revoked, does not match the redirection URI used in the
    * authorization request, or was issued to another client.
@@ -371,7 +381,9 @@ class OAuth2 {
       self::CONFIG_ENFORCE_INPUT_REDIRECT => TRUE,
 
       self::CONFIG_ENFORCE_STATE          => FALSE,
-      self::CONFIG_SUPPORTED_SCOPES       => null, // This is expected to be passed in on construction. Scopes can be an aribitrary string.
+      self::CONFIG_SUPPORTED_SCOPES       => null, // This is expected to be passed in on construction. Scopes can be an arbitrary string.
+      self::CONFIG_SCOPES_POLICY          => "default", // This is expected to be passed in on construction. Scopes policy can be "default" or "error".
+      self::CONFIG_DEFAULT_SCOPES         => null, // This is expected to be passed in on construction. Default scopes can be an arbitrary string.
     );
   }
 
@@ -403,6 +415,8 @@ class OAuth2 {
   public function setVariable($name, $value) {
     $name = strtolower($name);
 
+    if( self::CONFIG_SCOPES_POLICY === $name && !in_array($value, array("error","default")) )
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE_POLICY, 'The policy must be either "error" or "default"');
     $this->conf[$name] = $value;
     return $this;
   }
@@ -651,6 +665,32 @@ class OAuth2 {
     return (count(array_diff($required_scope, $available_scope)) == 0);
   }
 
+  /**
+   * Checks whether the scope policy is respected
+   *
+   * @param string $scope
+   *   The scopes to check.
+   *
+   * @return
+   *   The scopes or throw an exception
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.3
+   *
+   * @ingroup oauth2_section_3.3
+   */
+  protected function checkScopePolicy($scope) {
+    // If Scopes Policy is set to "error" and no scope is input, then throws an error
+    if (!$scope && "error" === $this->getVariable(self::CONFIG_SCOPES_POLICY, "default") ) {
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'No scope was requested.');
+    }
+
+    // If Scopes Policy is set to "default" and no scope is input, then application defaults are set
+    if (!$scope && "default" === $this->getVariable(self::CONFIG_SCOPES_POLICY, "default") ) {
+      return $this->getVariable(self::CONFIG_DEFAULT_SCOPES, null);
+    }
+    return $scope;
+  }
+
   // Access token granting (Section 4).
 
   /**
@@ -700,6 +740,8 @@ class OAuth2 {
     if (!$input["grant_type"]) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Invalid grant_type parameter or parameter missing');
     }
+
+    $input["scope"] = $this->checkScopePolicy($input["scope"]);
 
     // Authorize the client
     $clientCreds = $this->getClientCredentials($inputData, $authHeaders);
@@ -753,7 +795,7 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.');
     }
 
-    $token = $this->createAccessToken($client, $stored['data'], $stored['scope']);
+    $token = $this->createAccessToken($client, $stored['data'], $input['scope']);
 
     return new Response(json_encode($token), 200, $this->getJsonHeaders());
   }
@@ -1072,6 +1114,8 @@ class OAuth2 {
     if ($params["state"]) {
       $result["query"]["state"] = $params["state"];
     }
+
+    $scope = $this->checkScopePolicy($scope);
 
     if ($is_authorized === FALSE) {
       throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_USER_DENIED, "The user denied access to your application", $params["state"]);
