@@ -505,7 +505,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
 
     $token = $stub->getLastAccessToken();
     $this->assertSame('cid', $token->getClientId());
-    $this->assertSame('scope1 scope2', $token->getScope());
+    $this->assertSame('scope1', $token->getScope());
   }
 
 	/**
