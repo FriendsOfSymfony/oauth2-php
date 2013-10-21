@@ -798,7 +798,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       $this->assertSame('access_denied', $e->getMessage());
       $this->assertSame('The user denied access to your application', $e->getDescription());
       $this->assertSame(array(
-        'Location' => 'http://www.example.com/?foo=bar&error=access_denied&error_description=The+user+denied+access+to+your+application&state=42',
+        'Location' => 'http://www.example.com/?foo=bar#error=access_denied&error_description=The+user+denied+access+to+your+application&state=42',
       ), $e->getResponseHeaders());
     }
   }
