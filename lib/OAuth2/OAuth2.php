@@ -87,6 +87,18 @@ class OAuth2 {
   const DEFAULT_WWW_REALM              = 'Service';
 
   /**
+   * Available scope policies.
+   *
+   * @var string
+   */
+  const POLICY_MODE_ERROR             = 'error';
+  const POLICY_MODE_DEFAULT           = 'default';
+  static function supportedPolicies()
+  {
+    return array(self::POLICY_MODE_DEFAULT, self::POLICY_MODE_ERROR);
+  }
+
+  /**
    * Configurable options.
    *
    * @var string
@@ -311,7 +323,7 @@ class OAuth2 {
 
   /**
    * The requested scope policy is invalid, unknown, or malformed.
-   * Must be either "error" or "default"
+   * See constants for supported policies
    *
    * @see https://tools.ietf.org/html/rfc6749#section-3.3
    */
@@ -382,7 +394,7 @@ class OAuth2 {
 
       self::CONFIG_ENFORCE_STATE          => FALSE,
       self::CONFIG_SUPPORTED_SCOPES       => null, // This is expected to be passed in on construction. Scopes can be an arbitrary string.
-      self::CONFIG_SCOPES_POLICY          => "default", // This is expected to be passed in on construction. Scopes policy can be "default" or "error".
+      self::CONFIG_SCOPES_POLICY          => self::POLICY_MODE_DEFAULT, // This is expected to be passed in on construction. See constants for supported policies.
       self::CONFIG_DEFAULT_SCOPES         => null, // This is expected to be passed in on construction. Default scopes can be an arbitrary string.
     );
   }
@@ -415,8 +427,8 @@ class OAuth2 {
   public function setVariable($name, $value) {
     $name = strtolower($name);
 
-    if( self::CONFIG_SCOPES_POLICY === $name && !in_array($value, array("error","default")) )
-      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE_POLICY, 'The policy must be either "error" or "default"');
+    if( self::CONFIG_SCOPES_POLICY === $name && !in_array($value, self::supportedPolicies()) )
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE_POLICY, 'The policy must be one of these values: '.json_encode(self::supportedPolicies() ));
     $this->conf[$name] = $value;
     return $this;
   }
@@ -666,7 +678,7 @@ class OAuth2 {
   }
 
   /**
-   * Checks whether the scope policy is respected
+   * Checks whether the scope policy is respected.
    *
    * @param string $scope
    *   The scopes to check.
@@ -682,12 +694,12 @@ class OAuth2 {
    */
   protected function checkScopePolicy($scope) {
     // If Scopes Policy is set to "error" and no scope is input, then throws an error
-    if (!$scope && "error" === $this->getVariable(self::CONFIG_SCOPES_POLICY, "default") ) {
+    if (!$scope && self::POLICY_MODE_ERROR === $this->getVariable(self::CONFIG_SCOPES_POLICY, self::POLICY_MODE_DEFAULT) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'No scope was requested.');
     }
 
     // If Scopes Policy is set to "default" and no scope is input, then application defaults are set
-    if (!$scope && "default" === $this->getVariable(self::CONFIG_SCOPES_POLICY, "default") ) {
+    if (!$scope && self::POLICY_MODE_DEFAULT === $this->getVariable(self::CONFIG_SCOPES_POLICY, self::POLICY_MODE_DEFAULT) ) {
       return $this->getVariable(self::CONFIG_DEFAULT_SCOPES, null);
     }
     return $scope;

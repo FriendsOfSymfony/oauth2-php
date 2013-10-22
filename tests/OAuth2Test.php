@@ -845,7 +845,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
     $oauth2 = new OAuth2($stub, array(
       OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => "error",
+      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
     ));
 
     $data = new \stdClass;
@@ -870,7 +870,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
     $oauth2 = new OAuth2($stub, array(
       OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => "error",
+      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
     ));
 
     $data = new \stdClass;
@@ -894,7 +894,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
     $oauth2 = new OAuth2($stub, array(
       OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => "default",
+      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
     ));
 
     $data = new \stdClass;
@@ -918,7 +918,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
     $oauth2 = new OAuth2($stub, array(
       OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => "default",
+      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
     ));
 
     $data = new \stdClass;
@@ -942,7 +942,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
     $oauth2 = new OAuth2($stub, array(
       OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => "default",
+      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
       OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
     ));
 
@@ -967,7 +967,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
     $oauth2 = new OAuth2($stub, array(
       OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => "default",
+      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
       OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
     ));
 
