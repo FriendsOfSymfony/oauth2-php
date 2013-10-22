@@ -839,6 +839,22 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     }
   }
 
+  public function testScopePolicyWithUnknownMode() {
+
+    $stub = new OAuth2GrantCodeStub;
+    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
+
+    try {
+      $oauth2 = new OAuth2($stub, array(
+        OAuth2::CONFIG_SCOPES_POLICY => 'custom_mode',
+      ));
+      
+      $this->fail('The expected exception OAuth2ServerException was not thrown');
+    } catch(OAuth2ServerException $e) {
+      $this->assertSame('invalid_scope_policy', $e->getMessage());
+    }
+  }
+
   public function testScopePolicyWithErrorModeWithoutScopeInRequest() {
 
     $stub = new OAuth2GrantCodeStub;
