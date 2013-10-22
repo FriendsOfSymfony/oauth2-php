@@ -671,8 +671,10 @@ class OAuth2 {
    * @param string $scope
    *   The scopes to check.
    *
-   * @return
-   *   The scopes or throw an exception
+   * @throws OAuth2ServerException
+   * 
+   * @return string
+   *   The modified scopes according to the policy.
    *
    * @see https://tools.ietf.org/html/rfc6749#section-3.3
    *
