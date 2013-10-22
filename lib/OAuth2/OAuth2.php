@@ -3,6 +3,7 @@
 namespace OAuth2;
 
 use OAuth2\Model\IOAuth2Client;
+use OAuth2\Model\IOAuth2AuthCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -65,6 +66,14 @@ class OAuth2 {
    * @var string
    */
   protected $oldRefreshToken;
+
+  /**
+   * Keep track of the used auth code. So we can mark it
+   * as used after successful authorization
+   *
+   * @var IOAuth2AuthCode
+   */
+  protected $usedAuthCode;
 
   /**
    * Default values for configuration options.
@@ -779,6 +788,8 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, "The authorization code has expired");
     }
 
+    $this->usedAuthCode = $authCode;
+
     return array(
       'scope' => $authCode->getScope(),
       'data' => $authCode->getData(),
@@ -1166,7 +1177,14 @@ class OAuth2 {
       // If we've granted a new refresh token, expire the old one
       if ($this->oldRefreshToken) {
         $this->storage->unsetRefreshToken($this->oldRefreshToken);
-        unset($this->oldRefreshToken);
+        $this->oldRefreshToken = null;
+      }
+    }
+
+    if ($this->storage instanceof IOAuth2GrantCode) {
+      if ($this->usedAuthCode) {
+        $this->storage->markAuthCodeAsUsed($this->usedAuthCode->getToken());
+        $this->usedAuthCode = null;
       }
     }
 
