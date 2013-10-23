@@ -36,7 +36,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture = new OAuth2($mockStorage);
     
     $scope = null;
-    $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
+    $this->setExpectedException('OAuth2\Exception\OAuth2AuthenticateException');
     $this->fixture->verifyAccessToken('', $scope);
   }
   
@@ -54,7 +54,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture = new OAuth2($mockStorage);
     
     $scope = null;
-    $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
+    $this->setExpectedException('OAuth2\Exception\OAuth2AuthenticateException');
     $this->fixture->verifyAccessToken($this->tokenId, $scope);
   }
   
@@ -74,7 +74,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture = new OAuth2($mockStorage);
     
     $scope = null;
-    $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
+    $this->setExpectedException('OAuth2\Exception\OAuth2AuthenticateException');
     $this->fixture->verifyAccessToken($this->tokenId, $scope);
   }
   
@@ -103,7 +103,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       $this->assertInstanceOf('OAuth2\Model\IOAuth2AccessToken', $actual);
     }
     else {
-      $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
+      $this->setExpectedException('OAuth2\Exception\OAuth2AuthenticateException');
       $this->fixture->verifyAccessToken($this->tokenId, $scope);
     }
   }
@@ -130,7 +130,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       $this->assertInstanceOf('OAuth2\Model\IOAuth2AccessToken', $actual);
     }
     else {
-      $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
+      $this->setExpectedException('OAuth2\Exception\OAuth2AuthenticateException');
       $this->fixture->verifyAccessToken($this->tokenId, $scopeRequired);
     }
   }
