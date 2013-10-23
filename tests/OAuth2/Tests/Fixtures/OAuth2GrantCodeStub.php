@@ -1,10 +1,11 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Tests\Fixtures;
 
+use OAuth2\IOAuth2GrantCode;
 use OAuth2\Model\IOAuth2Client;
-use OAuth2\Model\IOAuth2AuthCode;
-use OAuth2\Model\OAuth2AuthCode;
+use OAuth2\Tests\Model\OAuth2AuthCode;
+use OAuth2\Tests\Fixtures\OAuth2StorageStub;
 
 class OAuth2GrantCodeStub extends OAuth2StorageStub implements IOAuth2GrantCode {
     private $authCodes;

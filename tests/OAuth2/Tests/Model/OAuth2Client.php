@@ -1,6 +1,8 @@
 <?php
 
-namespace OAuth2\Model;
+namespace OAuth2\Tests\Model;
+
+use OAuth2\Model\IOAuth2Client;
 
 class OAuth2Client implements IOAuth2Client {
 

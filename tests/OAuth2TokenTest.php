@@ -2,7 +2,7 @@
 
 namespace OAuth2\Tests\Model;
 
-use OAuth2\Model\OAuth2Token;
+use OAuth2\Tests\Model\OAuth2Token;
 
 class OAuth2TokenTest extends \PHPUnit_Framework_TestCase {
 
