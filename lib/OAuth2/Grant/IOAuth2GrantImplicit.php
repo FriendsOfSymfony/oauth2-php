@@ -1,6 +1,9 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Grant;
+
+use OAuth2\OAuth2;
+use OAuth2\IOAuth2Storage;
 
 /**
  * Storage engines that support the "Implicit"

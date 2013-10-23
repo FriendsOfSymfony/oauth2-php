@@ -1,9 +1,10 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Grant;
 
+use OAuth2\OAuth2;
+use OAuth2\IOAuth2Storage;
 use OAuth2\Model\IOAuth2Client;
-use OAuth2\Model\IOAuth2AuthCode;
 
 /**
  * Storage engines that support the "Authorization Code"

@@ -7,6 +7,17 @@ use OAuth2\Model\IOAuth2AuthCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use OAuth2\Exception\OAuth2ServerException;
+use OAuth2\Exception\OAuth2RedirectException;
+use OAuth2\Exception\OAuth2AuthenticateException;
+
+use OAuth2\Grant\IOAuth2GrantClient;
+use OAuth2\Grant\IOAuth2GrantCode;
+use OAuth2\Grant\IOAuth2GrantExtension;
+use OAuth2\Grant\IOAuth2GrantImplicit;
+use OAuth2\Grant\IOAuth2GrantUser;
+use OAuth2\Grant\IOAuth2GrantRefreshToken;
+
 /**
  * @mainpage
  * OAuth 2.0 server in PHP, originally written for
@@ -833,7 +844,7 @@ class OAuth2 {
   }
 
   protected function grantAccessTokenRefreshToken(IOAuth2Client $client, array $input) {
-    if (!($this->storage instanceof IOAuth2RefreshTokens)) {
+    if (!($this->storage instanceof IOAuth2GrantRefreshToken)) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
     }
 

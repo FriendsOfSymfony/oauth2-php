@@ -1,6 +1,8 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Exception;
+
+use OAuth2\Exception\OAuth2ServerException;
 
 /**
  * Send an error header with the given realm and an error, if provided.

@@ -1,6 +1,6 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Exception;
 
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
  * an error.
  *
  */
-class OAuth2ServerException extends Exception {
+class OAuth2ServerException extends \Exception {
   
   protected $httpCode;
   protected $errorData = array();

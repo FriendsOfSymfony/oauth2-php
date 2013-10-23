@@ -1,6 +1,9 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Exception;
+
+use OAuth2\OAuth2;
+use OAuth2\Exception\OAuth2ServerException;
 
 /**
  * Redirect the end-user's user agent with error message.
