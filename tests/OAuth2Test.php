@@ -269,7 +269,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $inputData = array('redirect_uri' => 'http://www.crossdomain.com/my/subdir', 'grant_type' => OAuth2::GRANT_TYPE_AUTH_CODE, 'client_id' => 'my_little_app', 'client_secret' => 'b', 'code'=> 'foo');
     $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, NULL, NULL, 'http://www.example.com');
     
-    $mockStorage = $this->createBaseMock('Oauth2\IOAuth2GrantCode');
+    $mockStorage = $this->createBaseMock('Oauth2\Grant\IOAuth2GrantCode');
     $mockStorage->expects($this->any())
       ->method('getClient')
       ->will($this->returnValue(new OAuth2Client('my_little_app')));
