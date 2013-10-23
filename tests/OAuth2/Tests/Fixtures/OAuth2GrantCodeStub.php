@@ -2,7 +2,7 @@
 
 namespace OAuth2\Tests\Fixtures;
 
-use OAuth2\IOAuth2GrantCode;
+use OAuth2\Grant\IOAuth2GrantCode;
 use OAuth2\Model\IOAuth2Client;
 use OAuth2\Tests\Model\OAuth2AuthCode;
 use OAuth2\Tests\Fixtures\OAuth2StorageStub;

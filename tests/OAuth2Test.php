@@ -1,7 +1,7 @@
 <?php
 
 use OAuth2\OAuth2;
-use OAuth2\OAuth2ServerException;
+use OAuth2\Exception\OAuth2ServerException;
 use OAuth2\Model\IOAuth2AccessToken;
 use OAuth2\Tests\Model\OAuth2AccessToken;
 use OAuth2\Tests\Model\OAuth2AuthCode;
@@ -36,7 +36,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture = new OAuth2($mockStorage);
     
     $scope = null;
-    $this->setExpectedException('OAuth2\OAuth2AuthenticateException');
+    $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
     $this->fixture->verifyAccessToken('', $scope);
   }
   
@@ -54,7 +54,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture = new OAuth2($mockStorage);
     
     $scope = null;
-    $this->setExpectedException('OAuth2\OAuth2AuthenticateException');
+    $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
     $this->fixture->verifyAccessToken($this->tokenId, $scope);
   }
   
@@ -74,7 +74,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture = new OAuth2($mockStorage);
     
     $scope = null;
-    $this->setExpectedException('OAuth2\OAuth2AuthenticateException');
+    $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
     $this->fixture->verifyAccessToken($this->tokenId, $scope);
   }
   
@@ -103,7 +103,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       $this->assertInstanceOf('OAuth2\Model\IOAuth2AccessToken', $actual);
     }
     else {
-      $this->setExpectedException('OAuth2\OAuth2AuthenticateException');
+      $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
       $this->fixture->verifyAccessToken($this->tokenId, $scope);
     }
   }
@@ -130,7 +130,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       $this->assertInstanceOf('OAuth2\Model\IOAuth2AccessToken', $actual);
     }
     else {
-      $this->setExpectedException('OAuth2\OAuth2AuthenticateException');
+      $this->setExpectedException('OAuth2\Grant\OAuth2AuthenticateException');
       $this->fixture->verifyAccessToken($this->tokenId, $scopeRequired);
     }
   }
@@ -144,7 +144,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $mockStorage = $this->getMock('OAuth2\IOAuth2Storage');
     $this->fixture = new OAuth2($mockStorage);
     
-    $this->setExpectedException('OAuth2\OAuth2ServerException');
+    $this->setExpectedException('OAuth2\Exception\OAuth2ServerException');
     $this->fixture->grantAccessToken($request);
   }
   
@@ -908,7 +908,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       $request,
       null,
       null,
-      'OAuth2\OAuth2ServerException',
+      'OAuth2\Exception\OAuth2ServerException',
       'invalid_request',
       array(
         'WWW-Authenticate' => 'Bearer realm="Service", error="invalid_request", error_description="Only one method may be used to authenticate at a time (Auth header, GET or POST)."',
