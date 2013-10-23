@@ -202,7 +202,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
    * 
    */
   public function testGrantAccessTokenWithGrantAuthCodeMandatoryParams() {
-    $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
+    $mockStorage = $this->createBaseMock('OAuth2\Grant\IOAuth2GrantCode');
     $mockStorage->expects($this->any())
       ->method('getClient')
       ->will($this->returnValue(new OAuth2Client('dev-abc')));
@@ -239,7 +239,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
    * 
    */
   public function testGrantAccessTokenWithGrantAuthCodeNoToken() {
-    $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
+    $mockStorage = $this->createBaseMock('OAuth2\Grant\IOAuth2GrantCode');
     $mockStorage->expects($this->any())
       ->method('getClient')
       ->will($this->returnValue(new OAuth2Client('dev-abc')));
@@ -301,7 +301,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $inputData = array('client_id' => 'another_app', 'grant_type' => OAuth2::GRANT_TYPE_AUTH_CODE, 'redirect_uri' => 'http://www.example.com/my/subdir', 'client_secret' => 'b', 'code'=> 'foo');
     $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, NULL, NULL, 'http://www.example.com');
     
-    $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
+    $mockStorage = $this->createBaseMock('OAuth2\Grant\IOAuth2GrantCode');
     $mockStorage->expects($this->any())
       ->method('getClient')
       ->will($this->returnValue(new OAuth2Client('x')));
