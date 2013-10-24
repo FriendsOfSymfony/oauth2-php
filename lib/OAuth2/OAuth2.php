@@ -322,14 +322,6 @@ class OAuth2 {
   const ERROR_INVALID_SCOPE = 'invalid_scope';
 
   /**
-   * The requested scope policy is invalid, unknown, or malformed.
-   * See constants for supported policies
-   *
-   * @see https://tools.ietf.org/html/rfc6749#section-3.3
-   */
-  const ERROR_INVALID_SCOPE_POLICY = 'invalid_scope_policy';
-
-  /**
    * The provided authorization grant is invalid, expired,
    * revoked, does not match the redirection URI used in the
    * authorization request, or was issued to another client.
@@ -428,7 +420,7 @@ class OAuth2 {
     $name = strtolower($name);
 
     if( self::CONFIG_SCOPES_POLICY === $name && !in_array($value, self::supportedPolicies()) )
-      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE_POLICY, 'The policy must be one of these values: '.json_encode(self::supportedPolicies() ));
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'The policy must be one of these values: '.json_encode(self::supportedPolicies() ));
     $this->conf[$name] = $value;
     return $this;
   }
