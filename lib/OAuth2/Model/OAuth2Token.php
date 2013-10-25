@@ -1,6 +1,6 @@
 <?php
 
-namespace OAuth2\Tests\Model;
+namespace OAuth2\Model;
 
 use OAuth2\Model\IOAuth2Token;
 
