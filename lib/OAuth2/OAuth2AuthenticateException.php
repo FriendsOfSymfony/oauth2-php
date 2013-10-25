@@ -2,6 +2,8 @@
 
 namespace OAuth2;
 
+use OAuth2\OAuth2ServerException;
+
 /**
  * Send an error header with the given realm and an error, if provided.
  * Suitable for the bearer token type.

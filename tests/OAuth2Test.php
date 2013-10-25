@@ -3,12 +3,13 @@
 use OAuth2\OAuth2;
 use OAuth2\OAuth2ServerException;
 use OAuth2\Model\IOAuth2AccessToken;
-use OAuth2\Model\OAuth2AccessToken;
-use OAuth2\Model\OAuth2AuthCode;
-use OAuth2\Model\OAuth2Client;
-use OAuth2\OAuth2StorageStub;
-use OAuth2\OAuth2GrantCodeStub;
-use OAuth2\OAuth2GrantUserStub;
+use OAuth2\Tests\Model\OAuth2AccessToken;
+use OAuth2\Tests\Model\OAuth2AuthCode;
+use OAuth2\Tests\Model\OAuth2Client;
+use OAuth2\Tests\Fixtures\OAuth2StorageStub;
+use OAuth2\Tests\Fixtures\OAuth2GrantCodeStub;
+use OAuth2\Tests\Fixtures\OAuth2GrantUserStub;
+use OAuth2\Tests\Fixtures\OAuth2GrantExtensionStub;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -77,7 +78,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture->verifyAccessToken($this->tokenId, $scope);
   }
   
-	/**
+  /**
    * Tests OAuth2->verifyAccessToken() with different expiry dates
    * 
    * @dataProvider generateExpiryTokens
@@ -107,7 +108,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     }
   }
   
-	/**
+  /**
    * Tests OAuth2->verifyAccessToken() with different scopes
    * 
    * @dataProvider generateScopes
@@ -292,7 +293,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     }
   }
   
-	/**
+  /**
    * Tests OAuth2->grantAccessToken() with checks the client ID is matched
    * 
    */
@@ -370,7 +371,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture->grantAccessToken(/* parameters */);
   }
   
-	/**
+  /**
    * Tests OAuth2->grantAccessToken() with user credentials
    * 
    */
@@ -508,7 +509,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->assertSame('scope1 scope2', $token->getScope());
   }
 
-	/**
+  /**
    * Tests OAuth2->grantAccessToken() with client credentials
    * 
    */
@@ -518,7 +519,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->fixture->grantAccessToken(/* parameters */);
   }
   
-	/**
+  /**
    * Tests OAuth2->grantAccessToken() with refresh token
    * 
    */
@@ -538,7 +539,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $fbId = '35';
     $fbAccessToken = 'da4b9237bacccd_35';
 
-    $stub = new \OAuth2\Tests\Fixtures\OAuth2GrantExtensionStub();
+    $stub = new OAuth2GrantExtensionStub();
     $stub->addClient(new OAuth2Client($clientId, $clientSecret));
     $stub->setAllowedGrantTypes(array($grantType));
     $stub->addFacebookId($fbId);

@@ -2,6 +2,7 @@
 
 namespace OAuth2;
 
+use OAuth2\IOAuth2Storage;
 use OAuth2\Model\IOAuth2Client;
 use OAuth2\Model\IOAuth2Token;
 
@@ -13,7 +14,7 @@ use OAuth2\Model\IOAuth2Token;
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-6
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-1.5
  */
-interface IOAuth2RefreshTokens extends IOAuth2Storage {
+interface IOAuth2GrantRefreshToken extends IOAuth2Storage {
 
     /**
      * Grant refresh access tokens.

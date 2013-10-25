@@ -2,6 +2,9 @@
 
 namespace OAuth2;
 
+use OAuth2\OAuth2;
+use OAuth2\IOAuth2Storage;
+
 /**
  * Storage engines that support the "Implicit"
  * grant type should implement this interface

@@ -2,6 +2,8 @@
 
 namespace OAuth2\Model;
 
+use OAuth2\Model\IOAuth2Token;
+
 class OAuth2Token implements IOAuth2Token {
 
     private $clientId;

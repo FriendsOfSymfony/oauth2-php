@@ -1,8 +1,8 @@
 <?php
 
 use OAuth2\OAuth2;
-use OAuth2\Model\OAuth2AuthCode;
-use OAuth2\Model\OAuth2Client;
+use OAuth2\Tests\Model\OAuth2AuthCode;
+use OAuth2\Tests\Model\OAuth2Client;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

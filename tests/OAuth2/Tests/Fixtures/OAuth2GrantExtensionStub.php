@@ -4,7 +4,7 @@ namespace OAuth2\Tests\Fixtures;
 
 use OAuth2\IOAuth2GrantExtension;
 use OAuth2\OAuth2;
-use OAuth2\OAuth2StorageStub;
+use OAuth2\Tests\Fixtures\OAuth2StorageStub;
 use OAuth2\OAuth2ServerException;
 use OAuth2\Model\IOAuth2Client;
 

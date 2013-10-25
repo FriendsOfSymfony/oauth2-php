@@ -1,6 +1,9 @@
 <?php
 
-namespace OAuth2\Model;
+namespace OAuth2\Tests\Model;
+
+use OAuth2\Model\IOAuth2AuthCode;
+use OAuth2\Tests\Model\OAuth2Token;
 
 class OAuth2AuthCode extends OAuth2Token implements IOAuth2AuthCode {
 

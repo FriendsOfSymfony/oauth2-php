@@ -1,8 +1,10 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Tests\Fixtures;
 
+use OAuth2\IOAuth2GrantUser;
 use OAuth2\Model\IOAuth2Client;
+use OAuth2\Tests\Fixtures\OAuth2StorageStub;
 
 class OAuth2GrantUserStub extends OAuth2StorageStub implements IOAuth2GrantUser {
     private $users;

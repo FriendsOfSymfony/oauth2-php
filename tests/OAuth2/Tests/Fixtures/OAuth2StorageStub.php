@@ -1,10 +1,13 @@
 <?php
 
-namespace OAuth2;
+namespace OAuth2\Tests\Fixtures;
 
+use OAuth2\OAuth2;
+use OAuth2\IOAuth2Storage;
 use OAuth2\Model\IOAuth2Client;
-use OAuth2\Model\OAuth2Client;
-use OAuth2\Model\OAuth2AccessToken;
+use OAuth2\Tests\Model\OAuth2Client;
+use OAuth2\Tests\Model\OAuth2AccessToken;
+use OAuth2\Tests\Fixtures\OAuth2StorageStub;
 
 /**
  * IOAuth2Storage stub for testing
