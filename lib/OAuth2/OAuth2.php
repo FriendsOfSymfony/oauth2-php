@@ -85,6 +85,7 @@ class OAuth2 {
   const DEFAULT_REFRESH_TOKEN_LIFETIME = 1209600;
   const DEFAULT_AUTH_CODE_LIFETIME     = 30;
   const DEFAULT_WWW_REALM              = 'Service';
+  const DEFAULT_SCOPE_POLICY           = self::POLICY_MODE_DEFAULT;
 
   /**
    * Available scope policies.
@@ -386,7 +387,7 @@ class OAuth2 {
 
       self::CONFIG_ENFORCE_STATE          => FALSE,
       self::CONFIG_SUPPORTED_SCOPES       => null, // This is expected to be passed in on construction. Scopes can be an arbitrary string.
-      self::CONFIG_SCOPES_POLICY          => self::POLICY_MODE_DEFAULT, // This is expected to be passed in on construction. See constants for supported policies.
+      self::CONFIG_SCOPES_POLICY          => self::DEFAULT_SCOPE_POLICY, // This is expected to be passed in on construction. See constants for supported policies.
       self::CONFIG_DEFAULT_SCOPES         => null, // This is expected to be passed in on construction. Default scopes can be an arbitrary string.
     );
   }

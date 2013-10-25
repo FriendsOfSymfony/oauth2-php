@@ -851,7 +851,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       
       $this->fail('The expected exception OAuth2ServerException was not thrown');
     } catch(OAuth2ServerException $e) {
-      $this->assertSame('invalid_scope_policy', $e->getMessage());
+      $this->assertSame(Oauth2::ERROR_INVALID_SCOPE, $e->getMessage());
     }
   }
 
