@@ -7,16 +7,16 @@ use OAuth2\Model\IOAuth2AuthCode;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use OAuth2\Exception\OAuth2ServerException;
-use OAuth2\Exception\OAuth2RedirectException;
-use OAuth2\Exception\OAuth2AuthenticateException;
+use OAuth2\OAuth2ServerException;
+use OAuth2\OAuth2RedirectException;
+use OAuth2\OAuth2AuthenticateException;
 
-use OAuth2\Grant\IOAuth2GrantClient;
-use OAuth2\Grant\IOAuth2GrantCode;
-use OAuth2\Grant\IOAuth2GrantExtension;
-use OAuth2\Grant\IOAuth2GrantImplicit;
-use OAuth2\Grant\IOAuth2GrantUser;
-use OAuth2\Grant\IOAuth2GrantRefreshToken;
+use OAuth2\IOAuth2GrantClient;
+use OAuth2\IOAuth2GrantCode;
+use OAuth2\IOAuth2GrantExtension;
+use OAuth2\IOAuth2GrantImplicit;
+use OAuth2\IOAuth2GrantUser;
+use OAuth2\IOAuth2GrantRefreshToken;
 
 /**
  * @mainpage

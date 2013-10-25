@@ -1,8 +1,7 @@
 <?php
 
-namespace OAuth2\Exception;
+namespace OAuth2;
 
-use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**

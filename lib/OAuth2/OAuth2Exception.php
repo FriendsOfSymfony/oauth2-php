@@ -1,6 +1,6 @@
 <?php
 
-namespace OAuth2\Exception;
+namespace OAuth2;
 
 
 /**

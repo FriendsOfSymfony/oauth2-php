@@ -25,7 +25,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase {
     );
     $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, NULL, NULL, 'http://www.example.com');
 
-    $mockStorage = $this->createBaseMock('OAuth2\Grant\IOAuth2GrantCode');
+    $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
     $mockStorage->expects($this->any())
       ->method('getAuthCode')
       ->will($this->returnValue($storedToken));
@@ -46,7 +46,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase {
     );
     $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, NULL, NULL, 'http://www.example.com');
     
-    $mockStorage = $this->createBaseMock('OAuth2\Grant\IOAuth2GrantCode');
+    $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
     $mockStorage->expects($this->any())
       ->method('getAuthCode')
       ->will($this->returnValue($storedToken));
