@@ -771,6 +771,9 @@ class OAuth2 {
     switch ($input["grant_type"]) {
       case self::GRANT_TYPE_AUTH_CODE:
         $stored = $this->grantAccessTokenAuthCode($client, $input); // returns array('data' => data, 'scope' => scope)
+        if( isset($stored['scope'])) {
+          $input["scope"] = $stored["scope"];
+        }
         break;
       case self::GRANT_TYPE_USER_CREDENTIALS:
         $stored = $this->grantAccessTokenUserCredentials($client, $input); // returns: true || array('scope' => scope)

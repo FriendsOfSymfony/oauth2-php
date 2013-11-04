@@ -600,6 +600,44 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     $this->assertSame(null, $code->getScope());
     $this->assertSame($data, $code->getData());
   }
+  
+  /**
+   * Tests OAuth2->finishClientAuthorization()
+   */
+  public function testFinishClientAuthorizationWithScopes() {
+
+    $stub = new OAuth2GrantCodeStub;
+    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
+    $stub->setAllowedGrantTypes(array('authorization_code'));
+    $oauth2 = new OAuth2($stub, array(
+      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+    ));
+
+    $data = new \stdClass;
+
+    $response = $oauth2->finishClientAuthorization(true, $data, new Request(array(
+        'client_id' => 'blah',
+        'redirect_uri' => 'http://www.example.com/?foo=bar',
+        'response_type' => 'code',
+        'state' => '42',
+      )),
+      'scope1 scope3 scope5'
+    );
+
+    $this->assertSame(302, $response->getStatusCode());
+    $this->assertRegexp('#^http://www\.example\.com/\?foo=bar&state=42&code=#', $response->headers->get('location'));
+
+    $code = $stub->getLastAuthCode();
+    $this->assertSame('blah', $code->getClientId());
+    $this->assertSame('scope1 scope3 scope5', $code->getScope());
+    $this->assertSame($data, $code->getData());
+
+    $inputData = array('grant_type' => OAuth2::GRANT_TYPE_AUTH_CODE, 'client_id' => 'blah', 'client_secret' => 'foo', 'redirect_uri' => 'http://www.example.com/?foo=bars', 'code'=> $code->getToken());
+    $request = $this->createRequest($inputData);
+
+    $response = $oauth2->grantAccessToken($request);
+    $this->assertRegexp('{"access_token":"[^"]+","expires_in":3600,"token_type":"bearer","scope":"scope1 scope3 scope5"}', $response->getContent());
+  }
 
   public function testFinishClientAuthorizationThrowsErrorIfClientIdMissing() {
 
