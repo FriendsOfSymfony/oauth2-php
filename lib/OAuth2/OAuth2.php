@@ -673,29 +673,66 @@ class OAuth2 {
   /**
    * Checks whether the scope policy is respected.
    *
+   * @param IOAuth2Client $client
+   *   The client.
+   *
    * @param string $scope
    *   The scopes to check.
    *
    * @throws OAuth2ServerException
    * 
    * @return string
-   *   The modified scopes according to the policy.
+   *   The modified scopes according to the policy of the client or the server.
    *
    * @see https://tools.ietf.org/html/rfc6749#section-3.3
    *
    * @ingroup oauth2_section_3.3
    */
-  protected function checkScopePolicy($scope) {
+  protected function checkScopePolicy(IOAuth2Client $client, $scope) {
     // If Scopes Policy is set to "error" and no scope is input, then throws an error
-    if (!$scope && self::POLICY_MODE_ERROR === $this->getVariable(self::CONFIG_SCOPES_POLICY, self::POLICY_MODE_DEFAULT) ) {
+    if (!$scope && self::POLICY_MODE_ERROR === $this->getScopePolicy($client) ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'No scope was requested.');
     }
 
-    // If Scopes Policy is set to "default" and no scope is input, then application defaults are set
-    if (!$scope && self::POLICY_MODE_DEFAULT === $this->getVariable(self::CONFIG_SCOPES_POLICY, self::POLICY_MODE_DEFAULT) ) {
-      return $this->getVariable(self::CONFIG_DEFAULT_SCOPES, null);
+    // If Scopes Policy is set to "default" and no scope is input, then application or client defaults are set
+    if (!$scope && self::POLICY_MODE_DEFAULT === $this->getScopePolicy($client) ) {
+      return $this->getDefaultScopes($client);
     }
     return $scope;
+  }
+
+  /**
+   * Get the scope policy.
+   *
+   * @param IOAuth2Client $client
+   *   The client.
+   * 
+   * @return string
+   *   The scope policy depending on the client and the server.
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.3
+   *
+   * @ingroup oauth2_section_3.3
+   */
+  protected function getScopePolicy(IOAuth2Client $client) {
+    return $client->getScopePolicy()?:$this->getVariable(self::CONFIG_SCOPES_POLICY, self::POLICY_MODE_DEFAULT);
+  }
+
+  /**
+   * Get the default scopes.
+   *
+   * @param IOAuth2Client $client
+   *   The client.
+   * 
+   * @return string
+   *   The default scopes depending on the client and the server.
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.3
+   *
+   * @ingroup oauth2_section_3.3
+   */
+  protected function getDefaultScopes(IOAuth2Client $client) {
+    return $client->getDefaultScopes()?:$this->getVariable(self::CONFIG_DEFAULT_SCOPES, null);
   }
 
   // Access token granting (Section 4).
@@ -748,7 +785,6 @@ class OAuth2 {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Invalid grant_type parameter or parameter missing');
     }
 
-    $input["scope"] = $this->checkScopePolicy($input["scope"]);
 
     // Authorize the client
     $clientCreds = $this->getClientCredentials($inputData, $authHeaders);
@@ -766,6 +802,8 @@ class OAuth2 {
     if (!$this->storage->checkRestrictedGrantType($client, $input["grant_type"])) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNAUTHORIZED_CLIENT, 'The grant type is unauthorized for this client_id');
     }
+
+    $input["scope"] = $this->checkScopePolicy($client, $input["scope"]);
 
     // Do the granting
     switch ($input["grant_type"]) {
@@ -1125,7 +1163,7 @@ class OAuth2 {
       $result["query"]["state"] = $params["state"];
     }
 
-    $scope = $this->checkScopePolicy($scope);
+    $scope = $this->checkScopePolicy($params["client"], $scope);
 
     if ($is_authorized === FALSE) {
       throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_USER_DENIED, "The user denied access to your application", $params["state"]);

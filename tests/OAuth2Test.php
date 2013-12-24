@@ -877,167 +877,242 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
     }
   }
 
-  public function testScopePolicyWithUnknownMode() {
+  /**
+   * Test for scope policies and default scopes
+   * @dataProvider getTestScopePolicyData
+   */
+  public function testScopePolicy(OAuth2Client $client, array $server_options, Request $request = null, $exception = null, $exceptionMessage = null, $requested_scopes = null, $expected_scopes = null) {
 
     $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
+    $stub->addClient( $client );
 
     try {
-      $oauth2 = new OAuth2($stub, array(
-        OAuth2::CONFIG_SCOPES_POLICY => 'custom_mode',
-      ));
-      
-      $this->fail('The expected exception OAuth2ServerException was not thrown');
-    } catch(OAuth2ServerException $e) {
-      $this->assertSame(Oauth2::ERROR_INVALID_SCOPE, $e->getMessage());
+      $oauth2 = new OAuth2($stub, $server_options);
+
+      if( $request !== null ) {
+        $data = new \stdClass;
+        $response = $oauth2->finishClientAuthorization(true, $data, $request, $requested_scopes);
+        
+        $code = $stub->getLastAuthCode();
+        $this->assertSame($expected_scopes, $code->getScope());
+      }
+
+      if( $exception !== null ) {
+        $this->fail('The expected exception OAuth2ServerException was not thrown');
+      }
+    } catch(\Exception $e) {
+      if (!$exception || !($e instanceof $exception)) {
+        throw $e;
+      }
+      $this->assertSame($exceptionMessage, $e->getMessage());
     }
   }
 
-  public function testScopePolicyWithErrorModeWithoutScopeInRequest() {
+  public function getTestScopePolicyData() {
+    return array(
+      /** Scope policy and default scopes defined by the application **/
+      // Unknown scope policy
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/')),
+        array(
+          OAuth2::CONFIG_SCOPES_POLICY => 'custom_mode',
+        ),
+        null,
+        'OAuth2\OAuth2ServerException',
+        Oauth2::ERROR_INVALID_SCOPE,
+      ),
 
-    $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
-    $oauth2 = new OAuth2($stub, array(
-      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
-    ));
+      // Error policy without scope in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/')),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        'OAuth2\OAuth2ServerException',
+        Oauth2::ERROR_INVALID_SCOPE,
+      ),
 
-    $data = new \stdClass;
-    $request = new Request(array(
-        'client_id' => 'blah',
-        'redirect_uri' => 'http://www.example.com/?foo=bar',
-        'response_type' => 'code',
-        'state' => '42',
-    ));
+      // Error policy with scopes in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/')),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        'scope1 scope2',
+        'scope1 scope2',
+      ),
 
-    try {
-      $response = $oauth2->finishClientAuthorization(true, $data, $request);
-      $this->fail('The expected exception OAuth2ServerException was not thrown');
-    } catch(OAuth2ServerException $e) {
-      $this->assertSame('invalid_scope', $e->getMessage());
-    }
-  }
+      // Default policy, no default scopes and no scope in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/')),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+      ),
 
-  public function testScopePolicyWithErrorModeWithScopesInRequest() {
+      // Default policy, no default scopes and scopes in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/')),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        'scope1 scope2',
+        'scope1 scope2',
+      ),
 
-    $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
-    $oauth2 = new OAuth2($stub, array(
-      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
-    ));
+      // Default policy, default scopes and scopes in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/')),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        'scope1 scope2',
+        'scope1 scope2',
+      ),
 
-    $data = new \stdClass;
-    $request = new Request(array(
-        'client_id' => 'blah',
-        'redirect_uri' => 'http://www.example.com/?foo=bar',
-        'response_type' => 'code',
-        'state' => '42',
-    ));
+      /** Scope policy and default scopes defined by the client **/
+      // Error policy and no scope in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_ERROR),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        'OAuth2\OAuth2ServerException',
+        Oauth2::ERROR_INVALID_SCOPE,
+        null,
+        null,
+      ),
 
-    $response = $oauth2->finishClientAuthorization(true, $data, $request, "scope1 scope2");
+      // Error policy and scopes in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_ERROR),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        'scope1 scope2',
+        'scope1 scope2',
+      ),
 
-    $code = $stub->getLastAuthCode();
+      // Default policy, no default scopes in client and no scope in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_DEFAULT),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        null,
+        'scope3 scope5 scope7',
+      ),
 
-    $this->assertSame("scope1 scope2", $code->getScope());
-  }
+      // Default policy, default scopes in client and no scope in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_DEFAULT, 'scope4 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        null,
+        'scope4 scope6',
+      ),
 
-  public function testScopePolicyWithDefaultModeAndNoDefaultScopesWithoutScopeInRequest() {
-
-    $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
-    $oauth2 = new OAuth2($stub, array(
-      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
-    ));
-
-    $data = new \stdClass;
-    $request = new Request(array(
-        'client_id' => 'blah',
-        'redirect_uri' => 'http://www.example.com/?foo=bar',
-        'response_type' => 'code',
-        'state' => '42',
-    ));
-
-    $response = $oauth2->finishClientAuthorization(true, $data, $request, null);
-
-    $code = $stub->getLastAuthCode();
-
-    $this->assertSame(null, $code->getScope());
-  }
-
-  public function testScopePolicyWithDefaultModeAndNoDefaultScopesWithScopesInRequest() {
-
-    $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
-    $oauth2 = new OAuth2($stub, array(
-      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
-    ));
-
-    $data = new \stdClass;
-    $request = new Request(array(
-        'client_id' => 'blah',
-        'redirect_uri' => 'http://www.example.com/?foo=bar',
-        'response_type' => 'code',
-        'state' => '42',
-    ));
-
-    $response = $oauth2->finishClientAuthorization(true, $data, $request, "scope1 scope2");
-
-    $code = $stub->getLastAuthCode();
-
-    $this->assertSame("scope1 scope2", $code->getScope());
-  }
-
-  public function testScopePolicyWithDefaultModeAndDefaultScopesWithoutScopeInRequest() {
-
-    $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
-    $oauth2 = new OAuth2($stub, array(
-      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
-      OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
-    ));
-
-    $data = new \stdClass;
-    $request = new Request(array(
-        'client_id' => 'blah',
-        'redirect_uri' => 'http://www.example.com/?foo=bar',
-        'response_type' => 'code',
-        'state' => '42',
-    ));
-
-    $response = $oauth2->finishClientAuthorization(true, $data, $request);
-
-    $code = $stub->getLastAuthCode();
-
-    $this->assertSame("scope3 scope5 scope7", $code->getScope());
-  }
-
-  public function testScopePolicyWithDefaultModeAndDefaultScopesWithScopesInRequest() {
-
-    $stub = new OAuth2GrantCodeStub;
-    $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
-    $oauth2 = new OAuth2($stub, array(
-      OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
-      OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
-      OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
-    ));
-
-    $data = new \stdClass;
-    $request = new Request(array(
-        'client_id' => 'blah',
-        'redirect_uri' => 'http://www.example.com/?foo=bar',
-        'response_type' => 'code',
-        'state' => '42',
-    ));
-
-    $response = $oauth2->finishClientAuthorization(true, $data, $request, "scope1 scope2");
-
-    $code = $stub->getLastAuthCode();
-
-    $this->assertSame("scope1 scope2", $code->getScope());
+      // Default policy, default scopes in client and scopes in request
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_DEFAULT, 'scope4 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        'scope1 scope2',
+        'scope1 scope2',
+      ),
+    );
   }
 
   /**
