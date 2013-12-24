@@ -420,8 +420,6 @@ class OAuth2 {
   public function setVariable($name, $value) {
     $name = strtolower($name);
 
-    if( self::CONFIG_SCOPES_POLICY === $name && !in_array($value, self::supportedPolicies()) )
-      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'The policy must be one of these values: '.json_encode(self::supportedPolicies() ));
     $this->conf[$name] = $value;
     return $this;
   }
@@ -689,13 +687,18 @@ class OAuth2 {
    * @ingroup oauth2_section_3.3
    */
   protected function checkScopePolicy(IOAuth2Client $client, $scope) {
+
+    $policy = $this->getScopePolicy($client);
+    if( !in_array($policy, self::supportedPolicies()) )
+      throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'The policy must be one of these values: '.json_encode(self::supportedPolicies() ));
+
     // If Scopes Policy is set to "error" and no scope is input, then throws an error
-    if (!$scope && self::POLICY_MODE_ERROR === $this->getScopePolicy($client) ) {
+    if (!$scope && self::POLICY_MODE_ERROR === $policy ) {
       throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'No scope was requested.');
     }
 
     // If Scopes Policy is set to "default" and no scope is input, then application or client defaults are set
-    if (!$scope && self::POLICY_MODE_DEFAULT === $this->getScopePolicy($client) ) {
+    if (!$scope && self::POLICY_MODE_DEFAULT === $policy ) {
       return $this->getDefaultScopes($client);
     }
     return $scope;

@@ -881,7 +881,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
    * Test for scope policies and default scopes
    * @dataProvider getTestScopePolicyData
    */
-  public function testScopePolicy(OAuth2Client $client, array $server_options, Request $request = null, $exception = null, $exceptionMessage = null, $requested_scopes = null, $expected_scopes = null) {
+  public function testScopePolicy(OAuth2Client $client, array $server_options, Request $request = null, $exception = null, $exceptionMessage = null, $exceptionDescription = null, $requested_scopes = null, $expected_scopes = null) {
 
     $stub = new OAuth2GrantCodeStub;
     $stub->addClient( $client );
@@ -898,13 +898,14 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       }
 
       if( $exception !== null ) {
-        $this->fail('The expected exception OAuth2ServerException was not thrown');
+        $this->fail('The expected exception was not thrown');
       }
     } catch(\Exception $e) {
       if (!$exception || !($e instanceof $exception)) {
         throw $e;
       }
       $this->assertSame($exceptionMessage, $e->getMessage());
+      $this->assertSame($exceptionDescription, $e->getDescription());
     }
   }
 
@@ -917,9 +918,15 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         array(
           OAuth2::CONFIG_SCOPES_POLICY => 'custom_mode',
         ),
-        null,
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
         'OAuth2\OAuth2ServerException',
         Oauth2::ERROR_INVALID_SCOPE,
+        'The policy must be one of these values: '.json_encode(OAuth2::supportedPolicies()),
       ),
 
       // Error policy without scope in request
@@ -937,6 +944,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         )),
         'OAuth2\OAuth2ServerException',
         Oauth2::ERROR_INVALID_SCOPE,
+        'No scope was requested.',
       ),
 
       // Error policy with scopes in request
@@ -952,6 +960,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
           'response_type' => 'code',
           'state' => '42',
         )),
+        null,
         null,
         null,
         'scope1 scope2',
@@ -988,6 +997,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         )),
         null,
         null,
+        null,
         'scope1 scope2',
         'scope1 scope2',
       ),
@@ -1008,11 +1018,33 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         )),
         null,
         null,
+        null,
         'scope1 scope2',
         'scope1 scope2',
       ),
 
       /** Scope policy and default scopes defined by the client **/
+      // Unknown policy
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), 'unknown_policy'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3 scope4 scope5 scope6 scope7",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_DEFAULT,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope3 scope5 scope7",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        'OAuth2\OAuth2ServerException',
+        Oauth2::ERROR_INVALID_SCOPE,
+        'The policy must be one of these values: '.json_encode(OAuth2::supportedPolicies()),
+        null,
+        null,
+      ),
+
       // Error policy and no scope in request
       array(
         new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_ERROR),
@@ -1029,6 +1061,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         )),
         'OAuth2\OAuth2ServerException',
         Oauth2::ERROR_INVALID_SCOPE,
+        'No scope was requested.',
         null,
         null,
       ),
@@ -1047,6 +1080,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
           'response_type' => 'code',
           'state' => '42',
         )),
+        null,
         null,
         null,
         'scope1 scope2',
@@ -1070,6 +1104,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         null,
         null,
         null,
+        null,
         'scope3 scope5 scope7',
       ),
 
@@ -1090,6 +1125,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         null,
         null,
         null,
+        null,
         'scope4 scope6',
       ),
 
@@ -1107,6 +1143,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
           'response_type' => 'code',
           'state' => '42',
         )),
+        null,
         null,
         null,
         'scope1 scope2',
