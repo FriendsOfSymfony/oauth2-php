@@ -738,6 +738,23 @@ class OAuth2 {
     return $client->getDefaultScopes()?:$this->getVariable(self::CONFIG_DEFAULT_SCOPES, null);
   }
 
+  /**
+   * Get the available scopes.
+   *
+   * @param IOAuth2Client $client
+   *   The client.
+   * 
+   * @return string
+   *   The available scopes depending on the client and the server.
+   *
+   * @see https://tools.ietf.org/html/rfc6749#section-3.3
+   *
+   * @ingroup oauth2_section_3.3
+   */
+  protected function getSupportedScopes(IOAuth2Client $client) {
+    return $client->getSupportedScopes()?:$this->getVariable(self::CONFIG_SUPPORTED_SCOPES, null);
+  }
+
   // Access token granting (Section 4).
 
   /**
@@ -839,7 +856,7 @@ class OAuth2 {
 
     // if no scope provided to check against $input['scope'] then application defaults are set
     // if no data is provided than null is set
-    $stored += array('scope' => $this->getVariable(self::CONFIG_SUPPORTED_SCOPES, null), 'data' => null);
+    $stored += array('scope' => $this->getSupportedScopes($client), 'data' => null);
 
     // Check scope, if provided
     if ($input["scope"] && (!isset($stored["scope"]) || !$this->checkScope($input["scope"], $stored["scope"]))) {
@@ -1073,7 +1090,7 @@ class OAuth2 {
     }
 
     // Validate that the requested scope is supported
-    if ($input["scope"] && !$this->checkScope($input["scope"], $this->getVariable(self::CONFIG_SUPPORTED_SCOPES))) {
+    if ($input["scope"] && !$this->checkScope($input["scope"], $this->getSupportedScopes($client))) {
       throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.', $input["state"]);
     }
 
@@ -1164,6 +1181,11 @@ class OAuth2 {
 
     if ($params["state"]) {
       $result["query"]["state"] = $params["state"];
+    }
+
+    // Validate that the requested scope is supported
+    if ($scope && !$this->checkScope($scope, $this->getSupportedScopes($params["client"]))) {
+      throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.', $params["state"]);
     }
 
     $scope = $this->checkScopePolicy($params["client"], $scope);

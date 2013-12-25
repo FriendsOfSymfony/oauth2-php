@@ -8,16 +8,18 @@ class OAuth2Client implements IOAuth2Client {
     private $redirectUris;
     private $secret;
 
+    private $supported_scopes;
     private $default_scopes;
     private $scope_policy;
 
-    public function __construct($id, $secret = NULL, array $redirectUris = array(), $scope_policy = null, $default_scopes = null) {
+    public function __construct($id, $secret = NULL, array $redirectUris = array(), $scope_policy = null, $default_scopes = null, $supported_scopes = null) {
         $this->setPublicId($id);
         $this->setSecret($secret);
         $this->setRedirectUris($redirectUris);
 
         $this->setScopePolicy($scope_policy);
         $this->setDefaultScopes($default_scopes);
+        $this->setSupportedScopes($supported_scopes);
     }
 
     public function setPublicId($id) {
@@ -42,6 +44,15 @@ class OAuth2Client implements IOAuth2Client {
 
     public function getRedirectUris() {
         return $this->redirectUris;
+    }
+
+
+    public function setSupportedScopes($supported_scopes) {
+        $this->supported_scopes = $supported_scopes;
+    }
+
+    public function getSupportedScopes() {
+        return $this->supported_scopes;
     }
 
 

@@ -1149,6 +1149,129 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
         'scope1 scope2',
         'scope1 scope2',
       ),
+
+      /* Scope policy with supported scope defined by the client */
+      // No scope are requested and default scopes should be set
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_DEFAULT, 'scope6', 'scope4 scope5 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope2",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        null,
+        null,
+        'scope6',
+      ),
+
+      // No scope are requested and error mode is set
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_ERROR, null, 'scope4 scope5 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope2",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        'OAuth2\OAuth2ServerException',
+        Oauth2::ERROR_INVALID_SCOPE,
+        'No scope was requested.',
+      ),
+
+      // No scope are requested and error mode is set
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_ERROR, null, 'scope4 scope5 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope2",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        null,
+        'scope6',
+        'scope6'
+      ),
+
+      // Scopes are requested and should be accepted
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_DEFAULT, 'scope6', 'scope4 scope5 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope2",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        null,
+        null,
+        null,
+        'scope4 scope5',
+        'scope4 scope5',
+      ),
+
+      // Scopes are requested but are not supported by the client
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_DEFAULT, 'scope6', 'scope4 scope5 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope2",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        'OAuth2\OAuth2RedirectException',
+        Oauth2::ERROR_INVALID_SCOPE,
+        'An unsupported scope was requested.',
+        'scope1 scope2',
+      ),
+
+      // Scopes are requested but are not supported by the client
+      array(
+        new OAuth2Client('blah', 'foo', array('http://www.example.com/'), OAuth2::POLICY_MODE_ERROR, null, 'scope4 scope5 scope6'),
+        array(
+          OAuth2::CONFIG_SUPPORTED_SCOPES => "scope1 scope2 scope3",
+          OAuth2::CONFIG_SCOPES_POLICY => OAuth2::POLICY_MODE_ERROR,
+          OAuth2::CONFIG_DEFAULT_SCOPES => "scope2",
+        ),
+        new Request(array(
+          'client_id' => 'blah',
+          'redirect_uri' => 'http://www.example.com/?foo=bar',
+          'response_type' => 'code',
+          'state' => '42',
+        )),
+        'OAuth2\OAuth2RedirectException',
+        Oauth2::ERROR_INVALID_SCOPE,
+        'An unsupported scope was requested.',
+        'scope1 scope2',
+      ),
     );
   }
 
