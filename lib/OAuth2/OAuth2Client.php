@@ -40,7 +40,7 @@ abstract class OAuth2Client
      * @return
      *   The value of the variable.
      */
-    public function getVariable($name, $default = NULL)
+    public function getVariable($name, $default = null)
     {
         return isset($this->conf[$name]) ? $this->conf[$name] : $default;
     }
@@ -83,9 +83,9 @@ abstract class OAuth2Client
      *   - authorize_uri: (optional) The end-user authorization endpoint URI.
      *   - access_token_uri: (optional) The token endpoint URI.
      *   - services_uri: (optional) The services endpoint URI.
-     *   - cookie_support: (optional) TRUE to enable cookie support.
+     *   - cookie_support: (optional) true to enable cookie support.
      *   - base_domain: (optional) The domain for the cookie.
-     *   - file_upload_support: (optional) TRUE if file uploads are enabled.
+     *   - file_upload_support: (optional) true if file uploads are enabled.
      */
     public function __construct($config = array())
     {
@@ -146,11 +146,11 @@ abstract class OAuth2Client
      *
      *  @return
      *    A valid session object in associative array for setup cookie, and
-     *    NULL if not able to generate it with custom method.
+     *    null if not able to generate it with custom method.
      */
-    protected function getSessionObject($access_token = NULL)
+    protected function getSessionObject($access_token = null)
     {
-        $session = NULL;
+        $session = null;
 
         // Try generate local version of session cookie.
         if (!empty($access_token) && isset($access_token['access_token'])) {
@@ -175,7 +175,7 @@ abstract class OAuth2Client
                 get_magic_quotes_gpc()
                     ? stripslashes($_REQUEST['session'])
                     : $_REQUEST['session'],
-                TRUE
+                true
             );
         }
 
@@ -225,7 +225,7 @@ abstract class OAuth2Client
             $this->getUri($path),
             $method,
             $params
-        ), TRUE);
+        ), true);
 
         // Results are returned, errors are thrown.
         if (is_array($result) && isset($result['error'])) {
@@ -233,9 +233,9 @@ abstract class OAuth2Client
             switch ($e->getType()) {
                 // OAuth 2.0 Draft 10 style.
                 case 'invalid_token':
-                    $this->setSession(NULL);
+                    $this->setSession(null);
                 default:
-                    $this->setSession(NULL);
+                    $this->setSession(null);
             }
             throw $e;
         }
@@ -250,8 +250,8 @@ abstract class OAuth2Client
      */
     public static $CURL_OPTS = array(
         CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_RETURNTRANSFER => TRUE,
-        CURLOPT_HEADER         => TRUE,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_HEADER         => true,
         CURLOPT_TIMEOUT        => 60,
         CURLOPT_USERAGENT      => 'oauth2-draft-v10',
         CURLOPT_HTTPHEADER     => array("Accept: application/json"),
@@ -261,19 +261,19 @@ abstract class OAuth2Client
      * Set the Session.
      *
      * @param $session
-     *   (optional) The session object to be set. NULL if hope to frush existing
+     *   (optional) The session object to be set. null if hope to frush existing
      *   session object.
      * @param $write_cookie
-     *   (optional) TRUE if a cookie should be written. This value is ignored
+     *   (optional) true if a cookie should be written. This value is ignored
      *   if cookie support has been disabled.
      *
      * @return
      *   The current OAuth2.0 client-side instance.
      */
-    public function setSession($session = NULL, $write_cookie = TRUE)
+    public function setSession($session = null, $write_cookie = true)
     {
         $this->setVariable('_session', $this->validateSessionObject($session));
-        $this->setVariable('_session_loaded', TRUE);
+        $this->setVariable('_session_loaded', true);
         if ($write_cookie) {
             $this->setCookieFromSession($this->getVariable('_session'));
         }
@@ -289,17 +289,17 @@ abstract class OAuth2Client
      * password, or cookie that we had already setup.
      *
      * @return
-     *   The valid session object with OAuth2.0 infomration, and NULL if not
+     *   The valid session object with OAuth2.0 infomration, and null if not
      *   able to discover any cases.
      */
     public function getSession()
     {
         if (!$this->getVariable('_session_loaded')) {
-            $session = NULL;
-            $write_cookie = TRUE;
+            $session = null;
+            $write_cookie = true;
 
             // Try obtain login session by custom method.
-            $session = $this->getSessionObject(NULL);
+            $session = $this->getSessionObject(null);
             $session = $this->validateSessionObject($session);
 
             // grant_type == authorization_code.
@@ -346,13 +346,13 @@ abstract class OAuth2Client
      * configuration.
      *
      * @return
-     *   The valid OAuth2.0 access token, and NULL if not exists in session.
+     *   The valid OAuth2.0 access token, and null if not exists in session.
      */
     public function getAccessToken()
     {
         $session = $this->getSession();
 
-        return isset($session['access_token']) ? $session['access_token'] : NULL;
+        return isset($session['access_token']) ? $session['access_token'] : null;
     }
 
     /**
@@ -367,7 +367,7 @@ abstract class OAuth2Client
      *
      * @return
      *   A valid OAuth2.0 JSON decoded access token in associative array, and
-     *   NULL if not enough parameters or JSON decode failed.
+     *   null if not enough parameters or JSON decode failed.
      */
     private function getAccessTokenFromAuthorizationCode($code)
     {
@@ -382,10 +382,10 @@ abstract class OAuth2Client
                     'code' => $code,
                     'redirect_uri' => $this->getCurrentUri(),
                 )
-            ), TRUE);
+            ), true);
         }
 
-        return NULL;
+        return null;
     }
 
     /**
@@ -402,7 +402,7 @@ abstract class OAuth2Client
      *
      * @return
      *   A valid OAuth2.0 JSON decoded access token in associative array, and
-     *   NULL if not enough parameters or JSON decode failed.
+     *   null if not enough parameters or JSON decode failed.
      */
     private function getAccessTokenFromPassword($username, $password)
     {
@@ -417,10 +417,10 @@ abstract class OAuth2Client
                     'username' => $username,
                     'password' => $password,
                 )
-            ), TRUE);
+            ), true);
         }
 
-        return NULL;
+        return null;
     }
 
     /**
@@ -470,7 +470,7 @@ abstract class OAuth2Client
      * @return
      *   The JSON decoded response object.
      */
-    protected function makeRequest($path, $method = 'GET', $params = array(), $ch = NULL)
+    protected function makeRequest($path, $method = 'GET', $params = array(), $ch = null)
     {
         if (!$ch)
             $ch = curl_init();
@@ -479,14 +479,14 @@ abstract class OAuth2Client
         if ($params) {
             switch ($method) {
                 case 'GET':
-                    $path .= '?' . http_build_query($params, NULL, '&');
+                    $path .= '?' . http_build_query($params, null, '&');
                     break;
                 // Method override as we always do a POST.
                 default:
                     if ($this->getVariable('file_upload_support')) {
                         $opts[CURLOPT_POSTFIELDS] = $params;
                     } else {
-                        $opts[CURLOPT_POSTFIELDS] = http_build_query($params, NULL, '&');
+                        $opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
                     }
             }
         }
@@ -512,7 +512,7 @@ abstract class OAuth2Client
             $result = curl_exec($ch);
         }
 
-        if ($result === FALSE) {
+        if ($result === false) {
             $e = new OAuth2Exception(array(
                 'code' => curl_errno($ch),
                 'message' => curl_error($ch),
@@ -527,7 +527,7 @@ abstract class OAuth2Client
         $headers = explode("\r\n", $headers);
 
         // We catch HTTP/1.1 4xx or HTTP/1.1 5xx error response.
-        if (strpos($headers[0], 'HTTP/1.1 4') !== FALSE || strpos($headers[0], 'HTTP/1.1 5') !== FALSE) {
+        if (strpos($headers[0], 'HTTP/1.1 4') !== false || strpos($headers[0], 'HTTP/1.1 5') !== false) {
             $result = array(
                 'code' => 0,
                 'message' => '',
@@ -571,7 +571,7 @@ abstract class OAuth2Client
      * @param $session
      *   The session to use for setting the cookie.
      */
-    protected function setCookieFromSession($session = NULL)
+    protected function setCookieFromSession($session = null)
     {
         if (!$this->getVariable('cookie_support'))
             return;
@@ -581,7 +581,7 @@ abstract class OAuth2Client
         $expires = time() - 3600;
         $base_domain = $this->getVariable('base_domain', self::DEFAULT_BASE_DOMAIN);
         if ($session) {
-            $value = '"' . http_build_query($session, NULL, '&') . '"';
+            $value = '"' . http_build_query($session, null, '&') . '"';
             $base_domain = isset($session['base_domain']) ? $session['base_domain'] : $base_domain;
             $expires = isset($session['expires']) ? $session['expires'] : time() + $this->getVariable('expires_in', self::DEFAULT_EXPIRES_IN);
         }
@@ -607,7 +607,7 @@ abstract class OAuth2Client
      *   The session object.
      *
      * @return
-     *   The session object if it validates, NULL otherwise.
+     *   The session object if it validates, null otherwise.
      */
     protected function validateSessionObject($session)
     {
@@ -624,10 +624,10 @@ abstract class OAuth2Client
 
             if ($session['sig'] != $expected_sig) {
                 error_log('Got invalid session signature in cookie.');
-                $session = NULL;
+                $session = null;
             }
         } else {
-            $session = NULL;
+            $session = null;
         }
 
         return $session;
@@ -676,7 +676,7 @@ abstract class OAuth2Client
             parse_str($parts['query'], $params);
             $params = array_filter($params);
             if (!empty($params)) {
-                $query = '?' . http_build_query($params, NULL, '&');
+                $query = '?' . http_build_query($params, null, '&');
             }
         }
 
@@ -711,7 +711,7 @@ abstract class OAuth2Client
                 $url = rtrim($url, '/') . '/' . ltrim($path, '/');
 
         if (!empty($params))
-            $url .= '?' . http_build_query($params, NULL, '&');
+            $url .= '?' . http_build_query($params, null, '&');
 
         return $url;
     }

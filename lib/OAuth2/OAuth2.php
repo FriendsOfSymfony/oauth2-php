@@ -370,9 +370,9 @@ class OAuth2
             // We have to enforce this only when no URI or more than one URI is
             // registered; however it's safer to enforce this by default since
             // a client may break by just registering more than one URI.
-            self::CONFIG_ENFORCE_INPUT_REDIRECT => TRUE,
+            self::CONFIG_ENFORCE_INPUT_REDIRECT => true,
 
-            self::CONFIG_ENFORCE_STATE          => FALSE,
+            self::CONFIG_ENFORCE_STATE          => false,
             self::CONFIG_SUPPORTED_SCOPES       => null, // This is expected to be passed in on construction. Scopes can be an aribitrary string.
         );
     }
@@ -388,7 +388,7 @@ class OAuth2
      * @return
      *   The value of the variable.
      */
-    public function getVariable($name, $default = NULL)
+    public function getVariable($name, $default = null)
     {
         $name = strtolower($name);
 
@@ -440,7 +440,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_7
      */
-    public function verifyAccessToken($token_param, $scope = NULL)
+    public function verifyAccessToken($token_param, $scope = null)
     {
         $tokenType = $this->getVariable(self::CONFIG_TOKEN_TYPE);
         $realm = $this->getVariable(self::CONFIG_WWW_REALM);
@@ -461,7 +461,7 @@ class OAuth2
         }
 
         // Check scope, if provided
-        // If token doesn't have a scope, it's NULL/empty, or it's insufficient, then throw an error
+        // If token doesn't have a scope, it's null/empty, or it's insufficient, then throw an error
         if ($scope && (!$token->getScope() || !$this->checkScope($scope, $token->getScope()))) {
             throw new OAuth2AuthenticateException(self::HTTP_FORBIDDEN, $tokenType, $realm, self::ERROR_INSUFFICIENT_SCOPE, 'The request requires higher privileges than provided by the access token.', $scope);
         }
@@ -487,26 +487,26 @@ class OAuth2
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.2
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.3
      */
-    public function getBearerToken(Request $request = NULL, $removeFromRequest = false)
+    public function getBearerToken(Request $request = null, $removeFromRequest = false)
     {
-        if ($request === NULL) {
+        if ($request === null) {
             $request = Request::createFromGlobals();
         }
 
         $tokens = array();
 
         $token = $this->getBearerTokenFromHeaders($request, $removeFromRequest);
-        if ($token !== NULL) {
+        if ($token !== null) {
             $tokens[] = $token;
         }
 
         $token = $this->getBearerTokenFromFormEncodedBody($request, $removeFromRequest);
-        if ($token !== NULL) {
+        if ($token !== null) {
             $tokens[] = $token;
         }
 
         $token = $this->getBearerTokenFromQuery($request, $removeFromRequest);
-        if ($token !== NULL) {
+        if ($token !== null) {
             $tokens[] = $token;
         }
 
@@ -519,7 +519,7 @@ class OAuth2
         if (count($tokens) < 1) {
             // Don't throw exception here as we may want to allow non-authenticated
             // requests.
-            return NULL;
+            return null;
         }
 
         return reset($tokens);
@@ -552,12 +552,12 @@ class OAuth2
         }
 
         if (!$header) {
-                return NULL;
+                return null;
         }
 
 
         if (!preg_match('/'.preg_quote(self::TOKEN_BEARER_HEADER_NAME, '/').'\s(\S+)/', $header, $matches)) {
-            return NULL;
+            return null;
         }
 
         $token = $matches[1];
@@ -620,7 +620,7 @@ class OAuth2
     protected function getBearerTokenFromQuery(Request $request, $removeFromRequest)
     {
         if (!$token = $request->query->get(self::TOKEN_PARAM_NAME)) {
-            return NULL;
+            return null;
         }
 
         if ($removeFromRequest) {
@@ -637,7 +637,7 @@ class OAuth2
      *   Required scope to be check with.
      *
      * @return
-     *   TRUE if everything in required scope is contained in available scope,
+     *   true if everything in required scope is contained in available scope,
      *   and False if it isn't.
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
@@ -675,7 +675,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_4
      */
-    public function grantAccessToken(Request $request = NULL)
+    public function grantAccessToken(Request $request = null)
     {
         $filters = array(
             "grant_type" => array("filter" => FILTER_VALIDATE_REGEXP, "options" => array("regexp" => self::GRANT_TYPE_REGEXP), "flags" => FILTER_REQUIRE_SCALAR),
@@ -687,7 +687,7 @@ class OAuth2
             "refresh_token" => array("flags" => FILTER_REQUIRE_SCALAR),
         );
 
-        if ($request === NULL) {
+        if ($request === null) {
             $request = Request::createFromGlobals();
         }
 
@@ -718,7 +718,7 @@ class OAuth2
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
         }
 
-        if ($this->storage->checkClientCredentials($client, $clientCreds[1]) === FALSE) {
+        if ($this->storage->checkClientCredentials($client, $clientCreds[1]) === false) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
         }
 
@@ -783,7 +783,7 @@ class OAuth2
         $authCode = $this->storage->getAuthCode($input["code"]);
 
         // Check the code exists
-        if ($authCode === NULL || $client->getPublicId() !== $authCode->getClientId()) {
+        if ($authCode === null || $client->getPublicId() !== $authCode->getClientId()) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, "Code doesn't exist or is invalid for the client");
         }
 
@@ -816,7 +816,7 @@ class OAuth2
 
         $stored = $this->storage->checkUserCredentials($client, $input["username"], $input["password"]);
 
-        if ($stored === FALSE) {
+        if ($stored === false) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
         }
 
@@ -835,7 +835,7 @@ class OAuth2
 
         $stored = $this->storage->checkClientCredentialsGrant($client, $clientCredentials[1]);
 
-        if ($stored === FALSE) {
+        if ($stored === false) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
         }
 
@@ -854,7 +854,7 @@ class OAuth2
 
         $token = $this->storage->getRefreshToken($input["refresh_token"]);
 
-        if ($token === NULL || $client->getPublicId() !== $token->getClientId()) {
+        if ($token === null || $client->getPublicId() !== $token->getClientId()) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, 'Invalid refresh token');
         }
 
@@ -879,7 +879,7 @@ class OAuth2
         $uri = filter_var($inputData["grant_type"], FILTER_VALIDATE_URL);
         $stored = $this->storage->checkGrantExtension($client, $uri, $inputData, $authHeaders);
 
-        if ($stored === FALSE) {
+        if ($stored === false) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
         }
 
@@ -916,7 +916,7 @@ class OAuth2
         } else {
             // This method is not recommended, but is supported by specification
             $client_id = $inputData['client_id'];
-            $client_secret = isset($inputData['client_secret']) ? $inputData['client_secret'] : NULL;
+            $client_secret = isset($inputData['client_secret']) ? $inputData['client_secret'] : null;
 
             return array($client_id, $client_secret);
         }
@@ -943,7 +943,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_3
      */
-    protected function getAuthorizeParams(Request $request = NULL)
+    protected function getAuthorizeParams(Request $request = null)
     {
         $filters = array(
             "client_id" => array("filter" => FILTER_VALIDATE_REGEXP, "options" => array("regexp" => self::CLIENT_ID_REGEXP), "flags" => FILTER_REQUIRE_SCALAR),
@@ -953,7 +953,7 @@ class OAuth2
             "scope" => array("flags" => FILTER_REQUIRE_SCALAR),
         );
 
-        if ($request === NULL) {
+        if ($request === null) {
             $request = Request::createFromGlobals();
         }
 
@@ -981,14 +981,14 @@ class OAuth2
         // Check requested auth response type against interfaces of storage engine
         if ($input['response_type'] == self::RESPONSE_TYPE_AUTH_CODE) {
                 if (!$this->storage instanceof IOAuth2GrantCode) {
-                        throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
+                        throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, null, $input["state"]);
                 }
         } elseif ($input['response_type'] == self::RESPONSE_TYPE_ACCESS_TOKEN) {
                 if (!$this->storage instanceof IOAuth2GrantImplicit) {
-                        throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
+                        throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, null, $input["state"]);
                 }
         } else {
-                throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, NULL, $input["state"]);
+                throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_UNSUPPORTED_RESPONSE_TYPE, null, $input["state"]);
         }
 
         // Validate that the requested scope is supported
@@ -1051,7 +1051,7 @@ class OAuth2
      * appropriately.
      *
      * @param $is_authorized
-     *   TRUE or FALSE depending on whether the user authorized the access.
+     *   true or false depending on whether the user authorized the access.
      * @param $data
      *   Application data
      * @param $params
@@ -1071,21 +1071,21 @@ class OAuth2
      *
      * @ingroup oauth2_section_4
      */
-    public function finishClientAuthorization($is_authorized, $data = NULL, Request $request = NULL, $scope = NULL)
+    public function finishClientAuthorization($is_authorized, $data = null, Request $request = null, $scope = null)
     {
         // In theory, this could be POSTed by a 3rd-party (because we are not
         // internally enforcing NONCEs, etc)
         $params = $this->getAuthorizeParams($request);
 
         $params += array(
-            'state' => NULL,
+            'state' => null,
         );
 
         if ($params["state"]) {
             $result["query"]["state"] = $params["state"];
         }
 
-        if ($is_authorized === FALSE) {
+        if ($is_authorized === false) {
             throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_USER_DENIED, "The user denied access to your application", $params["state"]);
         } else {
             if ($params["response_type"] == self::RESPONSE_TYPE_AUTH_CODE) {
@@ -1171,7 +1171,7 @@ class OAuth2
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5
      * @ingroup oauth2_section_5
      */
-    public function createAccessToken(IOAuth2Client $client, $data, $scope=NULL)
+    public function createAccessToken(IOAuth2Client $client, $data, $scope=null)
     {
         $token = array(
             "access_token" => $this->genAccessToken(),
@@ -1220,7 +1220,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_4
      */
-    private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = NULL)
+    private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = null)
     {
         $code = $this->genAuthCode();
         $this->storage->createAuthCode($code, $client, $data, $redirect_uri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);

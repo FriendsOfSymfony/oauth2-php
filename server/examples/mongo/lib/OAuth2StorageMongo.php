@@ -44,7 +44,7 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      */
     public function __destruct()
     {
-        $this->db = NULL; // Release db connection
+        $this->db = null; // Release db connection
     }
 
     /**
@@ -79,7 +79,7 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * Implements IOAuth2Storage::checkClientCredentials().
      *
      */
-    public function checkClientCredentials($client_id, $client_secret = NULL)
+    public function checkClientCredentials($client_id, $client_secret = null)
     {
         $client = $this->db->clients->findOne(array("_id" => $client_id, "pw" => $client_secret));
 
@@ -105,7 +105,7 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Implements IOAuth2Storage::setAccessToken().
      */
-    public function setAccessToken($oauth_token, $client_id, $user_id, $expires, $scope = NULL)
+    public function setAccessToken($oauth_token, $client_id, $user_id, $expires, $scope = null)
     {
         $this->db->tokens->insert(array(
             "_id" => $oauth_token,
@@ -120,15 +120,15 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      */
     public function getRefreshToken($refresh_token)
     {
-        return $this->getToken($refresh_token, TRUE);
+        return $this->getToken($refresh_token, true);
     }
 
     /**
      * @see IOAuth2Storage::setRefreshToken()
      */
-    public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = NULL)
+    public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = null)
     {
-        return $this->setToken($refresh_token, $client_id, $user_id, $expires, $scope, TRUE);
+        return $this->setToken($refresh_token, $client_id, $user_id, $expires, $scope, true);
     }
 
     /**
@@ -153,13 +153,13 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     {
         $stored_code = $this->db->auth_codes->findOne(array("_id" => $code));
 
-        return $stored_code !== NULL ? $stored_code : FALSE;
+        return $stored_code !== null ? $stored_code : false;
     }
 
     /**
      * Implements IOAuth2Storage::setAuthCode().
      */
-    public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = NULL)
+    public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null)
     {
         $this->db->auth_codes->insert(array(
             "_id" => $code,
@@ -175,7 +175,7 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      */
     public function checkRestrictedGrantType($client_id, $grant_type)
     {
-        return TRUE; // Not implemented
+        return true; // Not implemented
     }
 
     /**

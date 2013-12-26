@@ -24,23 +24,23 @@ interface IOAuth2GrantUser extends IOAuth2Storage
      * Required for OAuth2::GRANT_TYPE_USER_CREDENTIALS.
      *
      * @param IOAuth2Client $client
-     *                                Client to check.
+     *   Client to check.
      * @param string        $username
-     *                                Username to check.
+     *   Username to check.
      * @param string        $password
-     *                                Password to check.
+     *   Password to check.
      *
-     * @return
-     * TRUE if the username and password are valid, and FALSE if they aren't.
-     * Moreover, if the username and password are valid, and you want to
-     * verify the scope of a user's access, return an associative array
-     * with the scope values as below. We'll check the scope you provide
-     * against the requested scope before providing an access token:
-     * @code
-     * return array(
-     * 'scope' => <stored scope values (space-separated string)>,
-     * );
-     * @endcode
+     * @return boolean
+     *   true if the username and password are valid, and false if they aren't.
+     *   Moreover, if the username and password are valid, and you want to
+     *   verify the scope of a user's access, return an associative array
+     *   with the scope values as below. We'll check the scope you provide
+     *   against the requested scope before providing an access token:
+     *   @code
+     *   return array(
+     *       'scope' => <stored scope values (space-separated string)>,
+     *   );
+     *   @endcode
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.3
      *

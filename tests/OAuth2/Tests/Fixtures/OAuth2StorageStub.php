@@ -33,12 +33,12 @@ class OAuth2StorageStub implements IOAuth2Storage
         return $this->clients;
     }
 
-    public function checkClientCredentials(IOAuth2Client $client, $client_secret = NULL)
+    public function checkClientCredentials(IOAuth2Client $client, $client_secret = null)
     {
         return $client->checkSecret($client_secret);
     }
 
-    public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = NULL)
+    public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = null)
     {
         $token = new OAuth2AccessToken($client->getPublicId(), $oauth_token, $expires, $scope, $data);
         $this->accessTokens[$oauth_token] = $token;

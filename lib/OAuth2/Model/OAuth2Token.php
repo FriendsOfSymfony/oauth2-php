@@ -10,7 +10,7 @@ class OAuth2Token implements IOAuth2Token
     private $scope;
     private $data;
 
-    public function __construct($clientId, $token, $expiresAt = NULL, $scope = NULL, $data = NULL)
+    public function __construct($clientId, $token, $expiresAt = null, $scope = null, $data = null)
     {
         $this->setClientId($clientId);
         $this->setToken($token);

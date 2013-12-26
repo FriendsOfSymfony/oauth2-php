@@ -8,7 +8,7 @@ class OAuth2Client implements IOAuth2Client
     private $redirectUris;
     private $secret;
 
-    public function __construct($id, $secret = NULL, array $redirectUris = array())
+    public function __construct($id, $secret = null, array $redirectUris = array())
     {
         $this->setPublicId($id);
         $this->setSecret($secret);
@@ -32,7 +32,7 @@ class OAuth2Client implements IOAuth2Client
 
     public function checkSecret($secret)
     {
-        return $this->secret === NULL || $secret === $this->secret;
+        return $this->secret === null || $secret === $this->secret;
     }
 
     public function setRedirectUris(array $redirectUris)

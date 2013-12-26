@@ -76,7 +76,7 @@ class OAuth2Exception extends \Exception
     /**
      * To make debugging easier.
      *
-     * @returns
+     * @return string
      *   The string representation of the error.
      */
     public function __toString()

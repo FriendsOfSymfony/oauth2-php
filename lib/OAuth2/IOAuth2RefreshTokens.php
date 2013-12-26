@@ -23,7 +23,7 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage
      * Required for OAuth2::GRANT_TYPE_REFRESH_TOKEN.
      *
      * @param string $refresh_token
-     *                              Refresh token string.
+     *   Refresh token string.
      *
      * @return IOAuth2Token
      *
@@ -45,19 +45,19 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage
      * Required for OAuth2::GRANT_TYPE_REFRESH_TOKEN.
      *
      * @param string        $refresh_token
-     *                                     The refresh token string to be stored.
+     *   The refresh token string to be stored.
      * @param IOAuth2Client $client
-     *                                     The client associated with this refresh token.
+     *   The client associated with this refresh token.
      * @param mixed         $data
-     *                                     Application data associated with the refresh token, such as a User object.
+     *   Application data associated with the refresh token, such as a User object.
      * @param int           $expires
-     *                                     The timestamp when the refresh token will expire.
+     *   The timestamp when the refresh token will expire.
      * @param string        $scope
-     *                                     (optional) Scopes to be stored in space-separated string.
+     *   (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_6
      */
-    public function createRefreshToken($refresh_token, IOAuth2Client $client, $data, $expires, $scope = NULL);
+    public function createRefreshToken($refresh_token, IOAuth2Client $client, $data, $expires, $scope = null);
 
     /**
      * Expire a used refresh token.
@@ -71,7 +71,7 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage
      * and provide a descriptive fail message.
      *
      * @param string $refresh_token
-     *                              The refresh token string to expire.
+     *   The refresh token string to expire.
      *
      * @ingroup oauth2_section_6
      */

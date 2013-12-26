@@ -31,7 +31,7 @@ interface IOAuth2GrantCode extends IOAuth2Storage
      * Required for OAuth2::GRANT_TYPE_AUTH_CODE.
      *
      * @param string $code
-     *                     The authorization code string for which to fetch data.
+     *   The authorization code string for which to fetch data.
      *
      * @return IOAuth2AuthCode
      *
@@ -52,22 +52,22 @@ interface IOAuth2GrantCode extends IOAuth2Storage
      *
      * Required for OAuth2::GRANT_TYPE_AUTH_CODE.
      *
-     * @param string        $code
-     *                                    Authorization code string to be stored.
+     * @param string $code
+     *   Authorization code string to be stored.
      * @param IOAuth2Client $client
-     *                                    The client associated with this authorization code.
-     * @param mixed         $data
-     *                                    Application data to associate with this authorization code, such as a User object.
-     * @param string        $redirect_uri
-     *                                    Redirect URI to be stored.
-     * @param int           $expires
-     *                                    The timestamp when the authorization code will expire.
-     * @param string        $scope
-     *                                    (optional) Scopes to be stored in space-separated string.
+     *   The client associated with this authorization code.
+     * @param mixed  $data
+     *   Application data to associate with this authorization code, such as a User object.
+     * @param string $redirect_uri
+     *   Redirect URI to be stored.
+     * @param int    $expires
+     *   The timestamp when the authorization code will expire.
+     * @param string $scope
+     *   (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_4
      */
-    public function createAuthCode($code, IOAuth2Client $client, $data, $redirect_uri, $expires, $scope = NULL);
+    public function createAuthCode($code, IOAuth2Client $client, $data, $redirect_uri, $expires, $scope = null);
 
     /**
      * Marks auth code as expired.

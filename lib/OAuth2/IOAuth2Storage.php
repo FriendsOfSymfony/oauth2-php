@@ -23,19 +23,19 @@ interface IOAuth2Storage
      * Make sure that the client credentials are valid.
      *
      * @param IOAuth2Client $client
-     *                                     The client for which to check credentials.
+     * The client for which to check credentials.
      * @param string        $client_secret
-     *                                     (optional) If a secret is required, check that they've given the right one.
+     * (optional) If a secret is required, check that they've given the right one.
      *
      * @return
-     * TRUE if the client credentials are valid, and MUST return FALSE if they aren't.
+     * true if the client credentials are valid, and MUST return false if they aren't.
      * @endcode
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-3.1
      *
      * @ingroup oauth2_section_3
      */
-    public function checkClientCredentials(IOAuth2Client $client, $client_secret = NULL);
+    public function checkClientCredentials(IOAuth2Client $client, $client_secret = null);
 
     /**
      * Look up the supplied oauth_token from storage.
@@ -43,7 +43,7 @@ interface IOAuth2Storage
      * We need to retrieve access token data as we create and verify tokens.
      *
      * @param string $oauth_token
-     *                            The token string.
+     * The token string.
      *
      * @return IOAuth2AccessToken
      *
@@ -57,19 +57,19 @@ interface IOAuth2Storage
      * We need to store access token data as we create and verify tokens.
      *
      * @param string        $oauth_token
-     *                                   The access token string to be stored.
+     *   The access token string to be stored.
      * @param IOAuth2Client $client
-     *                                   The client associated with this refresh token.
+     *   The client associated with this refresh token.
      * @param mixed         $data
-     *                                   Application data associated with the refresh token, such as a User object.
+     *   Application data associated with the refresh token, such as a User object.
      * @param int           $expires
-     *                                   The timestamp when the refresh token will expire.
+     *   The timestamp when the refresh token will expire.
      * @param string        $scope
-     *                                   (optional) Scopes to be stored in space-separated string.
+     *   (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_4
      */
-    public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = NULL);
+    public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = null);
 
     /**
      * Check restricted grant types of corresponding client identifier.
@@ -78,13 +78,13 @@ interface IOAuth2Storage
      * function.
      *
      * @param IOAuth2Client $client
-     *                                  Client to check.
+     *   Client to check.
      * @param string        $grant_type
-     *                                  Grant type to check. One of the values contained in OAuth2::GRANT_TYPE_REGEXP.
+     *   Grant type to check. One of the values contained in OAuth2::GRANT_TYPE_REGEXP.
      *
      * @return
-     * TRUE if the grant type is supported by this client identifier, and
-     * FALSE if it isn't.
+     *   true if the grant type is supported by this client identifier, and
+     *   false if it isn't.
      *
      * @ingroup oauth2_section_4
      */

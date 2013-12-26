@@ -86,7 +86,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * Implements IOAuth2Storage::checkClientCredentials().
      *
      */
-    public function checkClientCredentials($client_id, $client_secret = NULL)
+    public function checkClientCredentials($client_id, $client_secret = null)
     {
         try {
             $sql = 'SELECT client_secret FROM '.self::TABLE_CLIENTS.' WHERE client_id = :client_id';
@@ -96,8 +96,8 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($client_secret === NULL)
-                    return $result !== FALSE;
+            if ($client_secret === null)
+                    return $result !== false;
 
             return $this->checkPassword($client_secret, $result['client_secret'], $client_id);
         } catch (PDOException $e) {
@@ -118,10 +118,10 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($result === FALSE)
-                    return FALSE;
+            if ($result === false)
+                    return false;
 
-            return isset($result['redirect_uri']) && $result['redirect_uri'] ? $result : NULL;
+            return isset($result['redirect_uri']) && $result['redirect_uri'] ? $result : null;
         } catch (PDOException $e) {
             $this->handleException($e);
         }
@@ -132,15 +132,15 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      */
     public function getAccessToken($oauth_token)
     {
-        return $this->getToken($oauth_token, FALSE);
+        return $this->getToken($oauth_token, false);
     }
 
     /**
      * Implements IOAuth2Storage::setAccessToken().
      */
-    public function setAccessToken($oauth_token, $client_id, $user_id, $expires, $scope = NULL)
+    public function setAccessToken($oauth_token, $client_id, $user_id, $expires, $scope = null)
     {
-        $this->setToken($oauth_token, $client_id, $user_id, $expires, $scope, FALSE);
+        $this->setToken($oauth_token, $client_id, $user_id, $expires, $scope, false);
     }
 
     /**
@@ -148,15 +148,15 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      */
     public function getRefreshToken($refresh_token)
     {
-        return $this->getToken($refresh_token, TRUE);
+        return $this->getToken($refresh_token, true);
     }
 
     /**
      * @see IOAuth2Storage::setRefreshToken()
      */
-    public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = NULL)
+    public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = null)
     {
-        return $this->setToken($refresh_token, $client_id, $user_id, $expires, $scope, TRUE);
+        return $this->setToken($refresh_token, $client_id, $user_id, $expires, $scope, true);
     }
 
     /**
@@ -187,7 +187,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result !== FALSE ? $result : NULL;
+            return $result !== false ? $result : null;
         } catch (PDOException $e) {
             $this->handleException($e);
         }
@@ -196,7 +196,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Implements IOAuth2Storage::setAuthCode().
      */
-    public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = NULL)
+    public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null)
     {
         try {
             $sql = 'INSERT INTO '.self::TABLE_CODES.' (code, client_id, user_id, redirect_uri, expires, scope) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope)';
@@ -219,7 +219,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      */
     public function checkRestrictedGrantType($client_id, $grant_type)
     {
-        return TRUE; // Not implemented
+        return true; // Not implemented
     }
 
     /**
@@ -232,7 +232,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * @param string $scope
      * @param bool   $isRefresh
      */
-    protected function setToken($token, $client_id, $user_id, $expires, $scope, $isRefresh = TRUE)
+    protected function setToken($token, $client_id, $user_id, $expires, $scope, $isRefresh = true)
     {
         try {
             $tableName = $isRefresh ? self::TABLE_REFRESH :  self::TABLE_TOKENS;
@@ -270,7 +270,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            return $result !== FALSE ? $result : NULL;
+            return $result !== false ? $result : null;
         } catch (PDOException $e) {
             $this->handleException($e);
         }

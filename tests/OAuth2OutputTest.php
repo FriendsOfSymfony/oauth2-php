@@ -24,7 +24,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
         $request = new Request(
             array('grant_type' => OAuth2::GRANT_TYPE_AUTH_CODE, 'redirect_uri' => 'http://www.example.com/my/subdir', 'client_id' => 'my_little_app', 'client_secret' => 'b', 'code'=> 'foo')
         );
-        $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, NULL, NULL, 'http://www.example.com');
+        $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, null, null, 'http://www.example.com');
 
         $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
         $mockStorage->expects($this->any())
@@ -46,7 +46,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
         $request = new Request(
             array('grant_type' => OAuth2::GRANT_TYPE_AUTH_CODE, 'client_id' => 'my_little_app', 'client_secret' => 'b', 'code'=> 'foo')
         );
-        $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, NULL, NULL, 'http://www.example.com');
+        $storedToken = new OAuth2AuthCode('my_little_app', '', time() + 60, null, null, 'http://www.example.com');
 
         $mockStorage = $this->createBaseMock('OAuth2\IOAuth2GrantCode');
         $mockStorage->expects($this->any())
@@ -81,10 +81,10 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
             }));
         $mockStorage->expects($this->any())
             ->method('checkClientCredentials')
-            ->will($this->returnValue(TRUE)); // Always return true for any combination of user/pass
+            ->will($this->returnValue(true)); // Always return true for any combination of user/pass
         $mockStorage->expects($this->any())
             ->method('checkRestrictedGrantType')
-            ->will($this->returnValue(TRUE)); // Always return true for any combination of user/pass
+            ->will($this->returnValue(true)); // Always return true for any combination of user/pass
 
          return $mockStorage;
     }
