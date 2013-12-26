@@ -2,15 +2,16 @@
 
 namespace OAuth2\Model;
 
-class OAuth2Token implements IOAuth2Token {
-
+class OAuth2Token implements IOAuth2Token
+{
     private $clientId;
     private $token;
     private $expiresAt;
     private $scope;
     private $data;
 
-    public function __construct($clientId, $token, $expiresAt = NULL, $scope = NULL, $data = NULL) {
+    public function __construct($clientId, $token, $expiresAt = NULL, $scope = NULL, $data = NULL)
+    {
         $this->setClientId($clientId);
         $this->setToken($token);
         $this->setExpiresAt($expiresAt);
@@ -18,19 +19,23 @@ class OAuth2Token implements IOAuth2Token {
         $this->setData($data);
     }
 
-    public function setClientId($id) {
+    public function setClientId($id)
+    {
         $this->clientId = $id;
     }
 
-    public function getClientId() {
+    public function getClientId()
+    {
         return $this->clientId;
     }
 
-    public function setExpiresAt($timestamp) {
+    public function setExpiresAt($timestamp)
+    {
         $this->expiresAt = $timestamp;
     }
 
-    public function getExpiresIn() {
+    public function getExpiresIn()
+    {
         if ($this->expiresAt) {
             return $this->expiresAt - time();
         } else {
@@ -38,11 +43,13 @@ class OAuth2Token implements IOAuth2Token {
         }
     }
 
-    public function hasExpired() {
+    public function hasExpired()
+    {
         return time() > $this->expiresAt;
     }
 
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
     }
 
@@ -51,7 +58,8 @@ class OAuth2Token implements IOAuth2Token {
         return $this->token;
     }
 
-    public function setScope($scope) {
+    public function setScope($scope)
+    {
         $this->scope = $scope;
     }
 
@@ -60,7 +68,8 @@ class OAuth2Token implements IOAuth2Token {
         return $this->scope;
     }
 
-    public function setData($data) {
+    public function setData($data)
+    {
         $this->data = $data;
     }
 
@@ -69,4 +78,3 @@ class OAuth2Token implements IOAuth2Token {
         return $this->data;
     }
 }
-

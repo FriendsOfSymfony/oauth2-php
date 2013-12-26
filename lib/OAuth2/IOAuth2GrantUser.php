@@ -11,8 +11,8 @@ use OAuth2\Model\IOAuth2Client;
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.3
  */
-interface IOAuth2GrantUser extends IOAuth2Storage {
-
+interface IOAuth2GrantUser extends IOAuth2Storage
+{
     /**
      * Grant access tokens for basic user credentials.
      *
@@ -24,11 +24,11 @@ interface IOAuth2GrantUser extends IOAuth2Storage {
      * Required for OAuth2::GRANT_TYPE_USER_CREDENTIALS.
      *
      * @param IOAuth2Client $client
-     * Client to check.
-     * @param string $username
-     * Username to check.
-     * @param string $password
-     * Password to check.
+     *                                Client to check.
+     * @param string        $username
+     *                                Username to check.
+     * @param string        $password
+     *                                Password to check.
      *
      * @return
      * TRUE if the username and password are valid, and FALSE if they aren't.

@@ -12,8 +12,8 @@ use OAuth2\Model\IOAuth2AuthCode;
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1
  */
-interface IOAuth2GrantCode extends IOAuth2Storage {
-
+interface IOAuth2GrantCode extends IOAuth2Storage
+{
     /**
      * The Authorization Code grant type supports a response type of "code".
      *
@@ -31,7 +31,7 @@ interface IOAuth2GrantCode extends IOAuth2Storage {
      * Required for OAuth2::GRANT_TYPE_AUTH_CODE.
      *
      * @param string $code
-     * The authorization code string for which to fetch data.
+     *                     The authorization code string for which to fetch data.
      *
      * @return IOAuth2AuthCode
      *
@@ -52,18 +52,18 @@ interface IOAuth2GrantCode extends IOAuth2Storage {
      *
      * Required for OAuth2::GRANT_TYPE_AUTH_CODE.
      *
-     * @param string $code
-     * Authorization code string to be stored.
+     * @param string        $code
+     *                                    Authorization code string to be stored.
      * @param IOAuth2Client $client
-     * The client associated with this authorization code.
-     * @param mixed $data
-     * Application data to associate with this authorization code, such as a User object.
-     * @param string $redirect_uri
-     * Redirect URI to be stored.
-     * @param int $expires
-     * The timestamp when the authorization code will expire.
-     * @param string $scope
-     * (optional) Scopes to be stored in space-separated string.
+     *                                    The client associated with this authorization code.
+     * @param mixed         $data
+     *                                    Application data to associate with this authorization code, such as a User object.
+     * @param string        $redirect_uri
+     *                                    Redirect URI to be stored.
+     * @param int           $expires
+     *                                    The timestamp when the authorization code will expire.
+     * @param string        $scope
+     *                                    (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_4
      */

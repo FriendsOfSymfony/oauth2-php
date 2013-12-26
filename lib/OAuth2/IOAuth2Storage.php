@@ -9,12 +9,12 @@ use OAuth2\Model\IOAuth2Client;
  *
  * @author David Rochwerger <catch.dave@gmail.com>
  */
-interface IOAuth2Storage {
-
+interface IOAuth2Storage
+{
     /**
      * Get a client by its ID.
      *
-     * @param string $client_id
+     * @param  string        $client_id
      * @return IOAuth2Client
      */
     public function getClient($client_id);
@@ -23,9 +23,9 @@ interface IOAuth2Storage {
      * Make sure that the client credentials are valid.
      *
      * @param IOAuth2Client $client
-     * The client for which to check credentials.
-     * @param string $client_secret
-     * (optional) If a secret is required, check that they've given the right one.
+     *                                     The client for which to check credentials.
+     * @param string        $client_secret
+     *                                     (optional) If a secret is required, check that they've given the right one.
      *
      * @return
      * TRUE if the client credentials are valid, and MUST return FALSE if they aren't.
@@ -43,7 +43,7 @@ interface IOAuth2Storage {
      * We need to retrieve access token data as we create and verify tokens.
      *
      * @param string $oauth_token
-     * The token string.
+     *                            The token string.
      *
      * @return IOAuth2AccessToken
      *
@@ -56,16 +56,16 @@ interface IOAuth2Storage {
      *
      * We need to store access token data as we create and verify tokens.
      *
-     * @param string $oauth_token
-     * The access token string to be stored.
+     * @param string        $oauth_token
+     *                                   The access token string to be stored.
      * @param IOAuth2Client $client
-     * The client associated with this refresh token.
-     * @param mixed $data
-     * Application data associated with the refresh token, such as a User object.
-     * @param int $expires
-     * The timestamp when the refresh token will expire.
-     * @param string $scope
-     * (optional) Scopes to be stored in space-separated string.
+     *                                   The client associated with this refresh token.
+     * @param mixed         $data
+     *                                   Application data associated with the refresh token, such as a User object.
+     * @param int           $expires
+     *                                   The timestamp when the refresh token will expire.
+     * @param string        $scope
+     *                                   (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_4
      */
@@ -78,9 +78,9 @@ interface IOAuth2Storage {
      * function.
      *
      * @param IOAuth2Client $client
-     * Client to check.
-     * @param string $grant_type
-     * Grant type to check. One of the values contained in OAuth2::GRANT_TYPE_REGEXP.
+     *                                  Client to check.
+     * @param string        $grant_type
+     *                                  Grant type to check. One of the values contained in OAuth2::GRANT_TYPE_REGEXP.
      *
      * @return
      * TRUE if the grant type is supported by this client identifier, and

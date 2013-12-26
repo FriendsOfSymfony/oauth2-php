@@ -2,8 +2,8 @@
 
 namespace OAuth2\Model;
 
-interface IOAuth2Token {
-
+interface IOAuth2Token
+{
     public function getClientId();
 
     public function getExpiresIn();
@@ -15,4 +15,3 @@ interface IOAuth2Token {
 
     public function getData();
 }
-

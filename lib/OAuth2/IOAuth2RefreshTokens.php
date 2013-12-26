@@ -13,8 +13,8 @@ use OAuth2\Model\IOAuth2Token;
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-6
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-1.5
  */
-interface IOAuth2RefreshTokens extends IOAuth2Storage {
-
+interface IOAuth2RefreshTokens extends IOAuth2Storage
+{
     /**
      * Grant refresh access tokens.
      *
@@ -23,7 +23,7 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage {
      * Required for OAuth2::GRANT_TYPE_REFRESH_TOKEN.
      *
      * @param string $refresh_token
-     * Refresh token string.
+     *                              Refresh token string.
      *
      * @return IOAuth2Token
      *
@@ -44,16 +44,16 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage {
      *
      * Required for OAuth2::GRANT_TYPE_REFRESH_TOKEN.
      *
-     * @param string $refresh_token
-     * The refresh token string to be stored.
+     * @param string        $refresh_token
+     *                                     The refresh token string to be stored.
      * @param IOAuth2Client $client
-     * The client associated with this refresh token.
-     * @param mixed $data
-     * Application data associated with the refresh token, such as a User object.
-     * @param int $expires
-     * The timestamp when the refresh token will expire.
-     * @param string $scope
-     * (optional) Scopes to be stored in space-separated string.
+     *                                     The client associated with this refresh token.
+     * @param mixed         $data
+     *                                     Application data associated with the refresh token, such as a User object.
+     * @param int           $expires
+     *                                     The timestamp when the refresh token will expire.
+     * @param string        $scope
+     *                                     (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_6
      */
@@ -71,7 +71,7 @@ interface IOAuth2RefreshTokens extends IOAuth2Storage {
      * and provide a descriptive fail message.
      *
      * @param string $refresh_token
-     * The refresh token string to expire.
+     *                              The refresh token string to expire.
      *
      * @ingroup oauth2_section_6
      */

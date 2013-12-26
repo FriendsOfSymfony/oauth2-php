@@ -11,15 +11,15 @@ use OAuth2\Model\IOAuth2Client;
  * @author Dave Rochwerger <catch.dave@gmail.com>
  * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.4
  */
-interface IOAuth2GrantClient extends IOAuth2Storage {
-
+interface IOAuth2GrantClient extends IOAuth2Storage
+{
     /**
      * Required for OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS.
      *
      * @param IOAuth2Client $client
-     * The client for which to check credentials.
-     * @param string $client_secret
-     * (optional) If a secret is required, check that they've given the right one.
+     *                                     The client for which to check credentials.
+     * @param string        $client_secret
+     *                                     (optional) If a secret is required, check that they've given the right one.
      *
      * @return
      * TRUE if the client credentials are valid, and MUST return FALSE if they aren't.

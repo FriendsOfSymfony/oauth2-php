@@ -4,10 +4,10 @@ namespace OAuth2\Tests\Model;
 
 use OAuth2\Model\OAuth2Token;
 
-class OAuth2TokenTest extends \PHPUnit_Framework_TestCase {
-
-    public function testConstruct() {
-
+class OAuth2TokenTest extends \PHPUnit_Framework_TestCase
+{
+    public function testConstruct()
+    {
         $expiresAt = time() + 42;
         $data = new \stdClass;
 
@@ -23,14 +23,15 @@ class OAuth2TokenTest extends \PHPUnit_Framework_TestCase {
     }
 
     /** @dataProvider getTestExpiresData */
-    public function testExpires($offset, $expired) {
-
+    public function testExpires($offset, $expired)
+    {
         $token = new OAuth2Token('foo', 'bar', time() + $offset);
 
         $this->assertSame($expired, $token->hasExpired());
     }
 
-    public function getTestExpiresData() {
+    public function getTestExpiresData()
+    {
         return array(
             array(-10, true),
             array(-5, true),
@@ -39,4 +40,3 @@ class OAuth2TokenTest extends \PHPUnit_Framework_TestCase {
         );
     }
 }
-
