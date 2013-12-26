@@ -181,7 +181,7 @@ class OAuth2StorageMongo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Change/override this to whatever your own password hashing method is.
      *
-     * @param string $secret
+     * @param  string $secret
      * @return string
      */
     protected function hash($client_secret, $client_id)

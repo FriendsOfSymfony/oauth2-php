@@ -435,8 +435,8 @@ class OAuth2
      *   A space-separated string of required scope(s), if you want to check
      *   for scope.
      * @return IOAuth2AccessToken
-     *   Token
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
+     *                            Token
+     *                            @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
      *
      * @ingroup oauth2_section_7
      */
@@ -938,8 +938,8 @@ class OAuth2
      *   the user for approval if valid.
      *
      * @throws OAuth2ServerException
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.1
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.12
+     *                               @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.1
+     *                               @see http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.12
      *
      * @ingroup oauth2_section_3
      */

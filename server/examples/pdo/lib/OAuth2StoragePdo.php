@@ -225,12 +225,12 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Creates a refresh or access token
      *
-     * @param string $token - Access or refresh token id
+     * @param string $token     - Access or refresh token id
      * @param string $client_id
-     * @param mixed $user_id
-     * @param int $expires
+     * @param mixed  $user_id
+     * @param int    $expires
      * @param string $scope
-     * @param bool $isRefresh
+     * @param bool   $isRefresh
      */
     protected function setToken($token, $client_id, $user_id, $expires, $scope, $isRefresh = TRUE)
     {
@@ -255,7 +255,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * Retrieves an access or refresh token.
      *
      * @param string $token
-     * @param bool $refresh
+     * @param bool   $refresh
      */
     protected function getToken($token, $isRefresh = true)
     {
@@ -279,7 +279,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Change/override this to whatever your own password hashing method is.
      *
-     * @param string $secret
+     * @param  string $secret
      * @return string
      */
     protected function hash($client_secret, $client_id)
