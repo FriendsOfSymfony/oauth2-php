@@ -467,7 +467,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       array('date' => null)
     ));
 
-    $this->assertRegExp('{"access_token":"[^"]+","expires_in":3600,"token_type":"bearer","scope":"scope1"}', $response->getContent());
+    $this->assertRegExp('{"access_token":"[^"]+","expires_in":3600,"token_type":"bearer","scope":"scope1 scope2"}', $response->getContent());
 
     $token = $stub->getLastAccessToken();
     $this->assertSame('cid', $token->getClientId());
@@ -501,7 +501,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase {
       array('date' => null)
     ));
 
-    $this->assertRegExp('{"access_token":"[^"]+","expires_in":3600,"token_type":"bearer","scope":"scope1 scope2"}', $response->getContent());
+    $this->assertRegExp('{"access_token":"[^"]+","expires_in":3600,"token_type":"bearer","scope":"scope1"}', $response->getContent());
 
     $token = $stub->getLastAccessToken();
     $this->assertSame('cid', $token->getClientId());
