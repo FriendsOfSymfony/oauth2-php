@@ -5,15 +5,16 @@ namespace OAuth2\Tests\Fixtures;
 use OAuth2\OAuth2;
 use OAuth2\Model\IOAuth2Client;
 use OAuth2\Model\OAuth2AccessToken;
-use OAuth2\IOAuth2Storage;
+use OAuth2\IOAuth2RefreshTokens;
 
 /**
  * IOAuth2Storage stub for testing
  */
-class OAuth2StorageStub implements IOAuth2Storage
+class OAuth2StorageStub implements IOAuth2RefreshTokens
 {
     private $clients = array();
     private $accessTokens = array();
+    private $refreshTokens = array();
     private $allowedGrantTypes = array(OAuth2::GRANT_TYPE_AUTH_CODE);
 
     public function addClient(IOAuth2Client $client)
@@ -69,5 +70,29 @@ class OAuth2StorageStub implements IOAuth2Storage
     public function checkRestrictedGrantType(IOAuth2Client $client, $grant_type)
     {
         return in_array($grant_type, $this->allowedGrantTypes);
+    }
+
+    public function getRefreshToken($refresh_token) {
+
+        if (isset($this->refreshTokens[$refresh_token])) {
+            return $this->refreshTokens[$refresh_token];
+        }
+    }
+
+    public function getLastRefreshToken()
+    {
+        return end($this->refreshTokens);
+    }
+
+    public function createRefreshToken($refresh_token, IOAuth2Client $client, $data, $expires, $scope = NULL) {
+
+        $token = new OAuth2AccessToken($client->getPublicId(), $refresh_token, $expires, $scope, $data);
+        $this->refreshTokens[$refresh_token] = $token;
+    }
+    public function unsetRefreshToken($refresh_token) {
+
+        if (isset($this->refreshTokens[$refresh_token])) {
+            unset($this->refreshTokens[$refresh_token]);
+        }
     }
 }

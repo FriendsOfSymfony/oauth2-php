@@ -985,7 +985,7 @@ class OAuth2 {
     }
 
     // Validate state parameter exists (if configured to enforce this)
-    if ($this->getVariable(self::CONFIG_ENFORCE_STATE) && !$input["state"]) {
+    if ($this->getEnforceState($client) && !$input["state"]) {
       throw new OAuth2RedirectException($input["redirect_uri"], self::ERROR_INVALID_REQUEST, "The state parameter is required.");
     }
 
@@ -1162,17 +1162,17 @@ class OAuth2 {
   public function createAccessToken(IOAuth2Client $client, $data, $scope=NULL) {
     $token = array(
       "access_token" => $this->genAccessToken(),
-      "expires_in"   => $this->getVariable(self::CONFIG_ACCESS_LIFETIME),
+      "expires_in"   => $this->getAccessTokenLifetime($client),
       "token_type"   => $this->getVariable(self::CONFIG_TOKEN_TYPE),
       "scope"        => $scope,
     );
 
-    $this->storage->createAccessToken($token["access_token"], $client, $data, time() + $this->getVariable(self::CONFIG_ACCESS_LIFETIME), $scope);
+    $this->storage->createAccessToken($token["access_token"], $client, $data, time() + $this->getAccessTokenLifetime($client), $scope);
 
     // Issue a refresh token also, if we support them
     if ($this->storage instanceof IOAuth2RefreshTokens) {
       $token["refresh_token"] = $this->genAccessToken();
-      $this->storage->createRefreshToken($token["refresh_token"], $client, $data, time() + $this->getVariable(self::CONFIG_REFRESH_LIFETIME), $scope);
+      $this->storage->createRefreshToken($token["refresh_token"], $client, $data, time() + $this->getRefreshTokenLifetime($client), $scope);
 
       // If we've granted a new refresh token, expire the old one
       if (null !== $this->oldRefreshToken) {
@@ -1209,7 +1209,7 @@ class OAuth2 {
    */
   private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = NULL) {
     $code = $this->genAuthCode();
-    $this->storage->createAuthCode($code, $client, $data, $redirect_uri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);
+    $this->storage->createAuthCode($code, $client, $data, $redirect_uri, time() + $this->getAuthCodeLifetime($client), $scope);
     return $code;
   }
 
@@ -1313,5 +1313,29 @@ class OAuth2 {
       }
     }
     return false;
+  }
+
+  protected function getAccessTokenLifetime(IOAuth2Client $client) {
+
+    return $client->getAccessTokenLifetime()!== null?$client->getAccessTokenLifetime():$this->getVariable(self::CONFIG_ACCESS_LIFETIME);
+
+  }
+
+  protected function getRefreshTokenLifetime(IOAuth2Client $client) {
+
+    return $client->getRefreshTokenLifetime()!== null?$client->getRefreshTokenLifetime():$this->getVariable(self::CONFIG_REFRESH_LIFETIME);
+
+  }
+
+  protected function getAuthCodeLifetime(IOAuth2Client $client) {
+
+    return $client->getAuthCodeLifetime()!== null?$client->getAuthCodeLifetime():$this->getVariable(self::CONFIG_AUTH_LIFETIME);
+
+  }
+
+  protected function getEnforceState(IOAuth2Client $client) {
+
+    return $client->getEnforceState()!== null?$client->getEnforceState():$this->getVariable(self::CONFIG_ENFORCE_STATE);
+
   }
 }
