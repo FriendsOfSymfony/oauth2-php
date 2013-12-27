@@ -16,14 +16,9 @@ class OAuth2ServerException extends Exception
     protected $errorData = array();
 
     /**
-     * @param $http_status_code
-     *   HTTP status code message as predefined.
-     * @param $error
-     *   A single error code.
-     * @param $error_description
-     *   (optional) A human-readable text providing additional information,
-     *   used to assist in the understanding and resolution of the error
-     *   occurred.
+     * @param $http_status_code  HTTP status code message as predefined.
+     * @param $error             A single error code.
+     * @param $error_description (optional) A human-readable text providing additional information, used to assist in the understanding and resolution of the error occurred.
      */
     public function __construct($http_status_code, $error, $error_description = null)
     {

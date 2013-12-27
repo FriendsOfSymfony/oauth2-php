@@ -380,13 +380,10 @@ class OAuth2
     /**
      * Returns a persistent variable.
      *
-     * @param $name
-     *   The name of the variable to return.
-     * @param $default
-     *   The default value to use if this variable has never been set.
+     * @param $name    The name of the variable to return.
+     * @param $default The default value to use if this variable has never been set.
      *
-     * @return
-     *   The value of the variable.
+     * @return mixed   The value of the variable.
      */
     public function getVariable($name, $default = null)
     {
@@ -398,10 +395,9 @@ class OAuth2
     /**
      * Sets a persistent variable.
      *
-     * @param $name
-     *   The name of the variable to set.
-     * @param $value
-     *   The value to set.
+     * @param  $name  The name of the variable to set.
+     * @param  $value The value to set.
+     * @return OAuth2 The application (for chained calls of this method)
      */
     public function setVariable($name, $value)
     {
@@ -431,12 +427,9 @@ class OAuth2
      * the exception thrown and behave differently if you like (log errors, allow
      * public access for missing tokens, etc)
      *
-     * @param $scope
-     *   A space-separated string of required scope(s), if you want to check
-     *   for scope.
-     * @return IOAuth2AccessToken
-     *                            Token
-     *                            @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
+     * @param $scope              A space-separated string of required scope(s), if you want to check for scope.
+     * @return IOAuth2AccessToken Token
+     * @see                       http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
      *
      * @ingroup oauth2_section_7
      */
@@ -633,12 +626,9 @@ class OAuth2
     /**
      * Check if everything in required scope is contained in available scope.
      *
-     * @param $required_scope
-     *   Required scope to be check with.
+     * @param $required_scope Required scope to be check with.
      *
-     * @return
-     *   true if everything in required scope is contained in available scope,
-     *   and False if it isn't.
+     * @return true if everything in required scope is contained in available scope, and False if it isn't.
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
      *
@@ -665,13 +655,12 @@ class OAuth2
      * This would be called from the "/token" endpoint as defined in the spec.
      * Obviously, you can call your endpoint whatever you want.
      *
-     * @param $inputData - The draft specifies that the parameters should be
-     * retrieved from POST, but you can override to whatever method you like.
+     * @param  $inputData            The draft specifies that the parameters should be retrieved from POST, but you can override to whatever method you like.
      * @throws OAuth2ServerException
      *
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.6
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-4.1.3
+     * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
+     * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.6
+     * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-4.1.3
      *
      * @ingroup oauth2_section_4
      */
@@ -893,8 +882,7 @@ class OAuth2
      * According to the spec (draft 20), the client_id can be provided in
      * the Basic Authorization header (recommended) or via GET/POST.
      *
-     * @return
-     *   A list containing the client identifier and password, for example
+     * @return array A list containing the client identifier and password, for example
      * @code
      * return array(
      *   CLIENT_ID,
@@ -931,15 +919,12 @@ class OAuth2
      *   - The state is OPTIONAL but recommended to enforce CSRF. Draft 21 states, however, that
      *     CSRF protection is MANDATORY. You can enforce this by setting the CONFIG_ENFORCE_STATE to true.
      *
-     * @param $inputData - The draft specifies that the parameters should be
-     * retrieved from GET, but you can override to whatever method you like.
-     * @return
-     *   The authorization parameters so the authorization server can prompt
-     *   the user for approval if valid.
+     * @param  $inputData The draft specifies that the parameters should be retrieved from GET, but you can override to whatever method you like.
+     * @return array      The authorization parameters so the authorization server can prompt the user for approval if valid.
      *
      * @throws OAuth2ServerException
-     *                               @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.1
-     *                               @see http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.12
+     * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.1
+     * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.12
      *
      * @ingroup oauth2_section_3
      */
@@ -1050,12 +1035,9 @@ class OAuth2
      * authorization server should call this function to redirect the user
      * appropriately.
      *
-     * @param $is_authorized
-     *   true or false depending on whether the user authorized the access.
-     * @param $data
-     *   Application data
-     * @param $params
-     *   An associative array as below:
+     * @param $is_authorized true or false depending on whether the user authorized the access.
+     * @param $data          Application data
+     * @param $params        An associative array as below:
      *   - response_type: The requested response: an access token, an
      *     authorization code, or both.
      *   - client_id: The client identifier as described in Section 2.
@@ -1105,11 +1087,8 @@ class OAuth2
      *
      * Handle both redirect for success or error response.
      *
-     * @param $redirect_uri
-     *   An absolute URI to which the authorization server will redirect
-     *   the user-agent to when the end-user authorization step is completed.
-     * @param $params
-     *   Parameters to be pass though buildUri().
+     * @param $redirect_uri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
+     * @param $params       Parameters to be pass though buildUri().
      *
      * @ingroup oauth2_section_4
      */
@@ -1163,12 +1142,10 @@ class OAuth2
      * This belongs in a separate factory, but to keep it simple, I'm just
      * keeping it here.
      *
-     * @param $client
-     *   Client identifier related to the access token.
-     * @param $scope
-     *   (optional) Scopes to be stored in space-separated string.
+     * @param $client Client identifier related to the access token.
+     * @param $scope  (optional) Scopes to be stored in space-separated string.
      *
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5
+     * @see   http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5
      * @ingroup oauth2_section_5
      */
     public function createAccessToken(IOAuth2Client $client, $data, $scope=null)
@@ -1210,13 +1187,9 @@ class OAuth2
      * This belongs in a separate factory, but to keep it simple, I'm just
      * keeping it here.
      *
-     * @param $client_id
-     *   Client identifier related to the access token.
-     * @param $redirect_uri
-     *   An absolute URI to which the authorization server will redirect the
-     *   user-agent to when the end-user authorization step is completed.
-     * @param $scope
-     *   (optional) Scopes to be stored in space-separated string.
+     * @param $client_id    Client identifier related to the access token.
+     * @param $redirect_uri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
+     * @param $scope        (optional) Scopes to be stored in space-separated string.
      *
      * @ingroup oauth2_section_4
      */
@@ -1234,8 +1207,7 @@ class OAuth2
      * Implementing classes may want to override this function to implement
      * other access token generation schemes.
      *
-     * @return
-     *   An unique access token.
+     * @return string An unique access token.
      *
      * @ingroup oauth2_section_4
      * @see OAuth2::genAuthCode()
@@ -1264,8 +1236,7 @@ class OAuth2
      * Implementing classes may want to override this function to implement
      * other auth code generation schemes.
      *
-     * @return
-     *   An unique auth code.
+     * @return string An unique auth code.
      *
      * @ingroup oauth2_section_4
      * @see OAuth2::genAccessToken()
@@ -1284,8 +1255,7 @@ class OAuth2
      *
      * @todo We may need to re-implement pulling out apache headers to support extended grant types
      *
-     * @return
-     *   An array of the basic username and password provided.
+     * @return array An array of the basic username and password provided.
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-2.4.1
      * @ingroup oauth2_section_2

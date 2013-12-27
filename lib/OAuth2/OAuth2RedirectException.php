@@ -14,18 +14,10 @@ class OAuth2RedirectException extends OAuth2ServerException
     protected $redirectUri;
 
     /**
-     * @param $redirect_uri
-     *   An absolute URI to which the authorization server will redirect the
-     *   user-agent to when the end-user authorization step is completed.
-     * @param $error
-     *   A single error code as described in Section 4.1.2.1
-     * @param $error_description
-     *   (optional) A human-readable text providing additional information,
-     *   used to assist in the understanding and resolution of the error
-     *   occurred.
-     * @param $state
-     *   (optional) REQUIRED if the "state" parameter was present in the client
-     *   authorization request. Set to the exact value received from the client.
+     * @param $redirect_uri      An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
+     * @param $error             A single error code as described in Section 4.1.2.1
+     * @param $error_description (optional) A human-readable text providing additional information, used to assist in the understanding and resolution of the error occurred.
+     * @param $state             (optional) REQUIRED if the "state" parameter was present in the client authorization request. Set to the exact value received from the client.
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.2.1
      *
@@ -59,13 +51,10 @@ class OAuth2RedirectException extends OAuth2ServerException
     /**
      * Build the absolute URI based on supplied URI and parameters.
      *
-     * @param $uri
-     *   An absolute URI.
-     * @param $params
-     *   Parameters to be append as GET.
+     * @param $uri    An absolute URI.
+     * @param $params Parameters to be append as GET.
      *
-     * @return string
-     *   An absolute URI with supplied parameters.
+     * @return string An absolute URI with supplied parameters.
      *
      * @ingroup oauth2_section_4
      */
