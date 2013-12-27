@@ -68,7 +68,7 @@ abstract class OAuth2Client
     /**
      * Initialize a Drupal OAuth2.0 Application.
      *
-     * @param array|\OAuth2\An $config An associative array as below:
+     * @param array $config An associative array as below:
      *   - base_uri: The base URI for the OAuth2.0 endpoints.
      *   - code: (optional) The authorization code.
      *   - username: (optional) The username.
