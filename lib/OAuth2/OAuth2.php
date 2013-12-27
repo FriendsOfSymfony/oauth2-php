@@ -427,7 +427,9 @@ class OAuth2
      * the exception thrown and behave differently if you like (log errors, allow
      * public access for missing tokens, etc)
      *
+     * @param $token_param
      * @param $scope              A space-separated string of required scope(s), if you want to check for scope.
+     * @throws OAuth2AuthenticateException
      * @return IOAuth2AccessToken Token
      * @see                       http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
      *
@@ -655,9 +657,10 @@ class OAuth2
      * This would be called from the "/token" endpoint as defined in the spec.
      * Obviously, you can call your endpoint whatever you want.
      *
-     * @param  $inputData            The draft specifies that the parameters should be retrieved from POST, but you can override to whatever method you like.
+     * @param \Symfony\Component\HttpFoundation\Request $request (optional) The request
      * @throws OAuth2ServerException
-     *
+     * @internal param \OAuth2\The $inputData draft specifies that the parameters should be retrieved from POST, but you can override to whatever method you like.
+     * @return \Symfony\Component\HttpFoundation\Response
      * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
      * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.6
      * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-4.1.3
@@ -882,6 +885,9 @@ class OAuth2
      * According to the spec (draft 20), the client_id can be provided in
      * the Basic Authorization header (recommended) or via GET/POST.
      *
+     * @param array $inputData
+     * @param array $authHeaders
+     * @throws OAuth2ServerException
      * @return array A list containing the client identifier and password, for example
      * @code
      * return array(
@@ -1037,7 +1043,10 @@ class OAuth2
      *
      * @param $is_authorized true or false depending on whether the user authorized the access.
      * @param $data          Application data
-     * @param $params        An associative array as below:
+     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param null $scope
+     * @throws OAuth2RedirectException
+     * @internal param \OAuth2\An $params associative array as below:
      *   - response_type: The requested response: an access token, an
      *     authorization code, or both.
      *   - client_id: The client identifier as described in Section 2.
@@ -1049,6 +1058,7 @@ class OAuth2
      *   - state: (optional) An opaque value used by the client to maintain
      *     state between the request and callback.
      *
+     * @return \Symfony\Component\HttpFoundation\Response
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
      *
      * @ingroup oauth2_section_4
@@ -1090,6 +1100,7 @@ class OAuth2
      * @param $redirect_uri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
      * @param $params       Parameters to be pass though buildUri().
      *
+     * @return \Symfony\Component\HttpFoundation\Response
      * @ingroup oauth2_section_4
      */
     private function createRedirectUriCallbackResponse($redirect_uri, $params)
@@ -1143,8 +1154,9 @@ class OAuth2
      * keeping it here.
      *
      * @param $client Client identifier related to the access token.
-     * @param $scope  (optional) Scopes to be stored in space-separated string.
+     * @param $scope (optional) Scopes to be stored in space-separated string.
      *
+     * @return array
      * @see   http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5
      * @ingroup oauth2_section_5
      */
@@ -1189,8 +1201,9 @@ class OAuth2
      *
      * @param $client_id    Client identifier related to the access token.
      * @param $redirect_uri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
-     * @param $scope        (optional) Scopes to be stored in space-separated string.
+     * @param $scope (optional) Scopes to be stored in space-separated string.
      *
+     * @return string
      * @ingroup oauth2_section_4
      */
     private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = null)
@@ -1288,7 +1301,9 @@ class OAuth2
     /**
      * Internal method for validating redirect URI supplied
      * @param string $inputUri
-     * @param string $storedUri
+     * @param $storedUris
+     * @return bool
+     * @internal param string $storedUri
      */
     protected function validateRedirectUri($inputUri, $storedUris)
     {

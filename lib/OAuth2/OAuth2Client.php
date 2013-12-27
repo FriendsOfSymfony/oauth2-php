@@ -49,6 +49,7 @@ abstract class OAuth2Client
      *
      * @param $name  The name of the variable to set.
      * @param $value The value to set.
+     * @return $this The client (for chained calls of this method)
      */
     public function setVariable($name, $value)
     {
@@ -67,7 +68,7 @@ abstract class OAuth2Client
     /**
      * Initialize a Drupal OAuth2.0 Application.
      *
-     * @param $config An associative array as below:
+     * @param array|\OAuth2\An $config An associative array as below:
      *   - base_uri: The base URI for the OAuth2.0 endpoints.
      *   - code: (optional) The authorization code.
      *   - username: (optional) The username.
@@ -426,10 +427,11 @@ abstract class OAuth2Client
      * fancier things or use something other than cURL to make the request.
      *
      * @param $path   The target path, relative to base_path/service_uri or an absolute URI.
-     * @param $method (optional) The HTTP method (default 'GET').
-     * @param $params (optional The GET/POST parameters.
-     * @param $ch     (optional) An initialized curl handle
+     * @param string $method (optional) The HTTP method (default 'GET').
+     * @param array $params (optional The GET/POST parameters.
+     * @param $ch (optional) An initialized curl handle
      *
+     * @throws OAuth2Exception
      * @return The JSON decoded response object.
      */
     protected function makeRequest($path, $method = 'GET', $params = array(), $ch = null)
