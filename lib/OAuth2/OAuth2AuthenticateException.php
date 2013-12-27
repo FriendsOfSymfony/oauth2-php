@@ -16,12 +16,12 @@ class OAuth2AuthenticateException extends OAuth2ServerException
 
     /**
      *
-     * @param HTTP $httpCode
-     * @param A $tokenType
-     * @param null $realm
-     * @param $error             The "error" attribute is used to provide the client with the reason why the access request was declined.
-     * @param $errorDescription (optional) Human-readable text containing additional information, used to assist in the understanding and resolution of the error occurred.
-     * @param $scope             (optional) A space-delimited list of scope values indicating the required scope of the access token for accessing the requested resource.
+     * @param string $httpCode
+     * @param string  $tokenType
+     * @param string $realm
+     * @param string $error             The "error" attribute is used to provide the client with the reason why the access request was declined.
+     * @param string $errorDescription (optional) Human-readable text containing additional information, used to assist in the understanding and resolution of the error occurred.
+     * @param string $scope             (optional) A space-delimited list of scope values indicating the required scope of the access token for accessing the requested resource.
      * @internal param \OAuth2\HTTP $http_status_code status code message as predefined.
      */
     public function __construct($httpCode, $tokenType, $realm, $error, $errorDescription = null, $scope = null)

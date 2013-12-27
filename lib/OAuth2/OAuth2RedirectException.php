@@ -5,7 +5,7 @@ namespace OAuth2;
 /**
  * Redirect the end-user's user agent with error message.
  *
- * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1
+ * @see     http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1
  *
  * @ingroup oauth2_error
  */
@@ -14,12 +14,12 @@ class OAuth2RedirectException extends OAuth2ServerException
     protected $redirectUri;
 
     /**
-     * @param $redirectUri      An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
-     * @param $error            A single error code as described in Section 4.1.2.1
-     * @param $errorDescription (optional) A human-readable text providing additional information, used to assist in the understanding and resolution of the error occurred.
-     * @param $state            (optional) REQUIRED if the "state" parameter was present in the client authorization request. Set to the exact value received from the client.
+     * @param string $redirectUri      An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
+     * @param string $error            A single error code as described in Section 4.1.2.1
+     * @param string $errorDescription (optional) A human-readable text providing additional information, used to assist in the understanding and resolution of the error occurred.
+     * @param string $state            (optional) REQUIRED if the "state" parameter was present in the client authorization request. Set to the exact value received from the client.
      *
-     * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.2.1
+     * @see     http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.2.1
      *
      * @ingroup oauth2_error
      */
@@ -44,7 +44,7 @@ class OAuth2RedirectException extends OAuth2ServerException
         $params = array('query' => $this->errorData);
 
         return array(
-                'Location' => $this->buildUri($this->redirectUri, $params),
+            'Location' => $this->buildUri($this->redirectUri, $params),
         );
     }
 
@@ -64,10 +64,11 @@ class OAuth2RedirectException extends OAuth2ServerException
 
         // Add our params to the parsed uri
         foreach ($params as $k => $v) {
-            if (isset($parse_url[$k]))
+            if (isset($parse_url[$k])) {
                 $parse_url[$k] .= "&" . http_build_query($v);
-            else
+            } else {
                 $parse_url[$k] = http_build_query($v);
+            }
         }
 
         // Put humpty dumpty back together
