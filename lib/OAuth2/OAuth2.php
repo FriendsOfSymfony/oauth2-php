@@ -427,7 +427,7 @@ class OAuth2
      * the exception thrown and behave differently if you like (log errors, allow
      * public access for missing tokens, etc)
      *
-     * @param $token_param
+     * @param $tokenParam
      * @param $scope              A space-separated string of required scope(s), if you want to check for scope.
      * @throws OAuth2AuthenticateException
      * @return IOAuth2AccessToken Token
@@ -435,17 +435,17 @@ class OAuth2
      *
      * @ingroup oauth2_section_7
      */
-    public function verifyAccessToken($token_param, $scope = null)
+    public function verifyAccessToken($tokenParam, $scope = null)
     {
         $tokenType = $this->getVariable(self::CONFIG_TOKEN_TYPE);
         $realm = $this->getVariable(self::CONFIG_WWW_REALM);
 
-        if (!$token_param) { // Access token was not provided
+        if (!$tokenParam) { // Access token was not provided
             throw new OAuth2AuthenticateException(self::HTTP_BAD_REQUEST, $tokenType, $realm, self::ERROR_INVALID_REQUEST, 'The request is missing a required parameter, includes an unsupported parameter or parameter value, repeats the same parameter, uses more than one method for including an access token, or is otherwise malformed.', $scope);
         }
 
         // Get the stored token data (from the implementing subclass)
-        $token = $this->storage->getAccessToken($token_param);
+        $token = $this->storage->getAccessToken($tokenParam);
         if (! $token) {
             throw new OAuth2AuthenticateException(self::HTTP_UNAUTHORIZED, $tokenType, $realm, self::ERROR_INVALID_GRANT, 'The access token provided is invalid.', $scope);
         }
@@ -628,7 +628,8 @@ class OAuth2
     /**
      * Check if everything in required scope is contained in available scope.
      *
-     * @param $required_scope Required scope to be check with.
+     * @param $requiredScope  Required scope to be check with.
+     * @param $availableScope Supported scopes.
      *
      * @return true if everything in required scope is contained in available scope, and False if it isn't.
      *
@@ -636,18 +637,18 @@ class OAuth2
      *
      * @ingroup oauth2_section_7
      */
-    protected function checkScope($required_scope, $available_scope)
+    protected function checkScope($requiredScope, $availableScope)
     {
         // The required scope should match or be a subset of the available scope
-        if (!is_array($required_scope)) {
-            $required_scope = explode(' ', trim($required_scope));
+        if (!is_array($requiredScope)) {
+            $requiredScope = explode(' ', trim($requiredScope));
         }
 
-        if (!is_array($available_scope)) {
-            $available_scope = explode(' ', trim($available_scope));
+        if (!is_array($availableScope)) {
+            $availableScope = explode(' ', trim($availableScope));
         }
 
-        return (count(array_diff($required_scope, $available_scope)) == 0);
+        return (count(array_diff($requiredScope, $availableScope)) == 0);
     }
 
     // Access token granting (Section 4).
@@ -657,10 +658,10 @@ class OAuth2
      * This would be called from the "/token" endpoint as defined in the spec.
      * Obviously, you can call your endpoint whatever you want.
      *
-     * @param \Symfony\Component\HttpFoundation\Request $request (optional) The request
+     * @param  Request $request (optional) The request
      * @throws OAuth2ServerException
      * @internal param \OAuth2\The $inputData draft specifies that the parameters should be retrieved from POST, but you can override to whatever method you like.
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
      * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.6
      * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-4.1.3
@@ -1041,9 +1042,9 @@ class OAuth2
      * authorization server should call this function to redirect the user
      * appropriately.
      *
-     * @param $is_authorized true or false depending on whether the user authorized the access.
+     * @param $isAuthorized  true or false depending on whether the user authorized the access.
      * @param $data          Application data
-     * @param \Symfony\Component\HttpFoundation\Request $request
+     * @param Request $request
      * @param null $scope
      * @throws OAuth2RedirectException
      * @internal param \OAuth2\An $params associative array as below:
@@ -1058,12 +1059,12 @@ class OAuth2
      *   - state: (optional) An opaque value used by the client to maintain
      *     state between the request and callback.
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
      *
      * @ingroup oauth2_section_4
      */
-    public function finishClientAuthorization($is_authorized, $data = null, Request $request = null, $scope = null)
+    public function finishClientAuthorization($isAuthorized, $data = null, Request $request = null, $scope = null)
     {
         // In theory, this could be POSTed by a 3rd-party (because we are not
         // internally enforcing NONCEs, etc)
@@ -1077,7 +1078,7 @@ class OAuth2
             $result["query"]["state"] = $params["state"];
         }
 
-        if ($is_authorized === false) {
+        if ($isAuthorized === false) {
             throw new OAuth2RedirectException($params["redirect_uri"], self::ERROR_USER_DENIED, "The user denied access to your application", $params["state"]);
         } else {
             if ($params["response_type"] == self::RESPONSE_TYPE_AUTH_CODE) {
@@ -1097,16 +1098,16 @@ class OAuth2
      *
      * Handle both redirect for success or error response.
      *
-     * @param $redirect_uri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
-     * @param $params       Parameters to be pass though buildUri().
+     * @param $redirectUri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
+     * @param $params      Parameters to be pass though buildUri().
      *
-     * @return \Symfony\Component\HttpFoundation\Response
+     * @return Response
      * @ingroup oauth2_section_4
      */
-    private function createRedirectUriCallbackResponse($redirect_uri, $params)
+    private function createRedirectUriCallbackResponse($redirectUri, $params)
     {
         return new Response('', 302, array(
-            'Location' => $this->buildUri($redirect_uri, $params),
+            'Location' => $this->buildUri($redirectUri, $params),
         ));
     }
 
@@ -1199,17 +1200,18 @@ class OAuth2
      * This belongs in a separate factory, but to keep it simple, I'm just
      * keeping it here.
      *
-     * @param $client_id    Client identifier related to the access token.
-     * @param $redirect_uri An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
-     * @param $scope (optional) Scopes to be stored in space-separated string.
+     * @param IOAuth2Client $client Client related to the access token.
+     * @param $data
+     * @param $redirectUri          An absolute URI to which the authorization server will redirect the user-agent to when the end-user authorization step is completed.
+     * @param $scope                (optional) Scopes to be stored in space-separated string.
      *
      * @return string
      * @ingroup oauth2_section_4
      */
-    private function createAuthCode(IOAuth2Client $client, $data, $redirect_uri, $scope = null)
+    private function createAuthCode(IOAuth2Client $client, $data, $redirectUri, $scope = null)
     {
         $code = $this->genAuthCode();
-        $this->storage->createAuthCode($code, $client, $data, $redirect_uri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);
+        $this->storage->createAuthCode($code, $client, $data, $redirectUri, time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME), $scope);
 
         return $code;
     }

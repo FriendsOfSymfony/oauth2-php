@@ -16,20 +16,18 @@ class OAuth2ServerException extends Exception
     protected $errorData = array();
 
     /**
-     * @param $http_status_code  HTTP status code message as predefined.
+     * @param $httpStatusCode  HTTP status code message as predefined.
      * @param $error             A single error code.
-     * @param $error_description (optional) A human-readable text providing additional information, used to assist in the understanding and resolution of the error occurred.
+     * @param $errorDescription (optional) A human-readable text providing additional information, used to assist in the understanding and resolution of the error occurred.
      */
-    public function __construct($http_status_code, $error, $error_description = null)
+    public function __construct($httpStatusCode, $error, $errorDescription = null)
     {
         parent::__construct($error);
 
-        $this->httpCode = $http_status_code;
+        $this->httpCode = $httpStatusCode;
 
         $this->errorData['error'] = $error;
-        if ($error_description) {
-            $this->errorData['error_description'] = $error_description;
-        }
+        $this->errorData['error_description'] = $errorDescription;
     }
 
     /**
@@ -37,7 +35,7 @@ class OAuth2ServerException extends Exception
      */
     public function getDescription()
     {
-        return isset($this->errorData['error_description']) ? $this->errorData['error_description'] : null;
+        return $this->errorData['error_description'];
     }
 
     /**
