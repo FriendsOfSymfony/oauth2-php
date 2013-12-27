@@ -10,6 +10,7 @@
 
 use OAuth2\IOAuth2GrantCode;
 use OAuth2\IOAuth2RefreshTokens;
+use OAuth2\Model\IOAuth2Client;
 
 /**
  * PDO storage engine for the OAuth2 Library.
@@ -59,23 +60,20 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * Do NOT use this in production! This sample code stores the secret
      * in plaintext!
      *
-     * @param $client_id
-     *   Client identifier to be stored.
-     * @param $client_secret
-     *   Client secret to be stored.
-     * @param $redirect_uri
-     *   Redirect URI to be stored.
+     * @param string $clientId     Client identifier to be stored.
+     * @param string $clientSecret Client secret to be stored.
+     * @param string $redirectUri  Redirect URI to be stored.
      */
-    public function addClient($client_id, $client_secret, $redirect_uri)
+    public function addClient($clientId, $clientSecret, $redirectUri)
     {
         try {
-            $client_secret = $this->hash($client_secret, $client_id);
+            $clientSecret = $this->hash($clientSecret, $clientId);
 
             $sql = 'INSERT INTO '.self::TABLE_CLIENTS.' (client_id, client_secret, redirect_uri) VALUES (:client_id, :client_secret, :redirect_uri)';
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':client_id', $client_id, PDO::PARAM_STR);
-            $stmt->bindParam(':client_secret', $client_secret, PDO::PARAM_STR);
-            $stmt->bindParam(':redirect_uri', $redirect_uri, PDO::PARAM_STR);
+            $stmt->bindParam(':client_id', $clientId, PDO::PARAM_STR);
+            $stmt->bindParam(':client_secret', $clientSecret, PDO::PARAM_STR);
+            $stmt->bindParam(':redirect_uri', $redirectUri, PDO::PARAM_STR);
             $stmt->execute();
         } catch (PDOException $e) {
             $this->handleException($e);
@@ -86,20 +84,21 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * Implements IOAuth2Storage::checkClientCredentials().
      *
      */
-    public function checkClientCredentials($client_id, $client_secret = null)
+    public function checkClientCredentials(IOAuth2Client $clientId, $clientSecret = null)
     {
         try {
             $sql = 'SELECT client_secret FROM '.self::TABLE_CLIENTS.' WHERE client_id = :client_id';
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':client_id', $client_id, PDO::PARAM_STR);
+            $stmt->bindParam(':client_id', $clientId, PDO::PARAM_STR);
             $stmt->execute();
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-            if ($client_secret === null)
-                    return $result !== false;
+            if ($clientSecret === null) {
+                return $result !== false;
+            }
 
-            return $this->checkPassword($client_secret, $result['client_secret'], $client_id);
+            return $this->checkPassword($clientSecret, $result['client_secret'], $clientId);
         } catch (PDOException $e) {
             $this->handleException($e);
         }
@@ -108,12 +107,12 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Implements IOAuth2Storage::getRedirectUri().
      */
-    public function getClientDetails($client_id)
+    public function getClientDetails($clientId)
     {
         try {
             $sql = 'SELECT redirect_uri FROM '.self::TABLE_CLIENTS.' WHERE client_id = :client_id';
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':client_id', $client_id, PDO::PARAM_STR);
+            $stmt->bindParam(':client_id', $clientId, PDO::PARAM_STR);
             $stmt->execute();
 
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -146,28 +145,28 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * @see IOAuth2Storage::getRefreshToken()
      */
-    public function getRefreshToken($refresh_token)
+    public function getRefreshToken($refreshToken)
     {
-        return $this->getToken($refresh_token, true);
+        return $this->getToken($refreshToken, true);
     }
 
     /**
      * @see IOAuth2Storage::setRefreshToken()
      */
-    public function setRefreshToken($refresh_token, $client_id, $user_id, $expires, $scope = null)
+    public function setRefreshToken($refreshToken, $clientId, $userId, $expires, $scope = null)
     {
-        return $this->setToken($refresh_token, $client_id, $user_id, $expires, $scope, true);
+        return $this->setToken($refreshToken, $clientId, $userId, $expires, $scope, true);
     }
 
     /**
      * @see IOAuth2Storage::unsetRefreshToken()
      */
-    public function unsetRefreshToken($refresh_token)
+    public function unsetRefreshToken($refreshToken)
     {
         try {
             $sql = 'DELETE FROM '.self::TABLE_TOKENS.' WHERE refresh_token = :refresh_token';
             $stmt = $this->db->prepare($sql);
-            $stmt->bindParam(':refresh_token', $refresh_token, PDO::PARAM_STR);
+            $stmt->bindParam(':refresh_token', $refreshToken, PDO::PARAM_STR);
             $stmt->execute();
         } catch (PDOException $e) {
             $this->handleException($e);
@@ -196,15 +195,15 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Implements IOAuth2Storage::setAuthCode().
      */
-    public function setAuthCode($code, $client_id, $user_id, $redirect_uri, $expires, $scope = null)
+    public function setAuthCode($code, $clientId, $userId, $redirectUri, $expires, $scope = null)
     {
         try {
             $sql = 'INSERT INTO '.self::TABLE_CODES.' (code, client_id, user_id, redirect_uri, expires, scope) VALUES (:code, :client_id, :user_id, :redirect_uri, :expires, :scope)';
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':code', $code, PDO::PARAM_STR);
-            $stmt->bindParam(':client_id', $client_id, PDO::PARAM_STR);
-            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
-            $stmt->bindParam(':redirect_uri', $redirect_uri, PDO::PARAM_STR);
+            $stmt->bindParam(':client_id', $clientId, PDO::PARAM_STR);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
+            $stmt->bindParam(':redirect_uri', $redirectUri, PDO::PARAM_STR);
             $stmt->bindParam(':expires', $expires, PDO::PARAM_INT);
             $stmt->bindParam(':scope', $scope, PDO::PARAM_STR);
 
@@ -217,7 +216,7 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * @see IOAuth2Storage::checkRestrictedGrantType()
      */
-    public function checkRestrictedGrantType($client_id, $grant_type)
+    public function checkRestrictedGrantType(IOAuth2Client $client, $grantType)
     {
         return true; // Not implemented
     }
@@ -225,14 +224,14 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Creates a refresh or access token
      *
-     * @param string $token     - Access or refresh token id
-     * @param string $client_id
-     * @param mixed  $user_id
+     * @param string $token     Access or refresh token id
+     * @param string $clientId
+     * @param mixed  $userId
      * @param int    $expires
      * @param string $scope
      * @param bool   $isRefresh
      */
-    protected function setToken($token, $client_id, $user_id, $expires, $scope, $isRefresh = true)
+    protected function setToken($token, $clientId, $userId, $expires, $scope, $isRefresh = true)
     {
         try {
             $tableName = $isRefresh ? self::TABLE_REFRESH :  self::TABLE_TOKENS;
@@ -240,8 +239,8 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
             $sql = "INSERT INTO $tableName (oauth_token, client_id, user_id, expires, scope) VALUES (:token, :client_id, :user_id, :expires, :scope)";
             $stmt = $this->db->prepare($sql);
             $stmt->bindParam(':token', $token, PDO::PARAM_STR);
-            $stmt->bindParam(':client_id', $client_id, PDO::PARAM_STR);
-            $stmt->bindParam(':user_id', $user_id, PDO::PARAM_STR);
+            $stmt->bindParam(':client_id', $clientId, PDO::PARAM_STR);
+            $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
             $stmt->bindParam(':expires', $expires, PDO::PARAM_INT);
             $stmt->bindParam(':scope', $scope, PDO::PARAM_STR);
 
@@ -255,7 +254,9 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
      * Retrieves an access or refresh token.
      *
      * @param string $token
-     * @param bool   $refresh
+     * @param bool   $isRefresh
+     *
+     * @return array|null
      */
     protected function getToken($token, $isRefresh = true)
     {
@@ -279,24 +280,28 @@ class OAuth2StoragePdo implements IOAuth2GrantCode, IOAuth2RefreshTokens
     /**
      * Change/override this to whatever your own password hashing method is.
      *
-     * @param  string $secret
+     * @param  string $clientSecret
+     * @param  string $clientId
+     *
      * @return string
      */
-    protected function hash($client_secret, $client_id)
+    protected function hash($clientSecret, $clientId)
     {
-        return hash('sha1', $client_id.$client_secret.$this->salt);
+        return hash('sha1', $clientId.$clientSecret.$this->salt);
     }
 
     /**
      * Checks the password.
      * Override this if you need to
      *
-     * @param string $client_id
-     * @param string $client_secret
-     * @param string $actualPassword
+     * @param string $try
+     * @param string $clientSecret
+     * @param string $clientId
+     *
+     * @return bool
      */
-    protected function checkPassword($try, $client_secret, $client_id)
+    protected function checkPassword($try, $clientSecret, $clientId)
     {
-        return $client_secret == $this->hash($try, $client_id);
+        return $clientSecret == $this->hash($try, $clientId);
     }
 }
