@@ -8,22 +8,28 @@ namespace OAuth2;
  * @author Originally written by Naitik Shah <naitik@facebook.com>.
  * @author Update to draft v10 by Edison Wong <hswong3i@pantarei-design.com>.
  *
- * @sa <a href="https://github.com/facebook/php-sdk">Facebook PHP SDK</a>.
+ * @sa     <a href="https://github.com/facebook/php-sdk">Facebook PHP SDK</a>.
  */
 abstract class OAuth2Client
 {
- /**
-    * The default Cache Lifetime (in seconds).
-    */
+    /**
+     * The default Cache Lifetime (in seconds).
+     *
+     * @var int
+     */
     const DEFAULT_EXPIRES_IN = 3600;
 
- /**
-    * The default Base domain for the Cookie.
-    */
+    /**
+     * The default Base domain for the Cookie.
+     *
+     * @var string
+     */
     const DEFAULT_BASE_DOMAIN = '';
 
     /**
      * Array of persistent variables stored.
+     *
+     * @var array
      */
     protected $conf = array();
 
@@ -32,8 +38,8 @@ abstract class OAuth2Client
      *
      * To avoid problems, always use lower case for persistent variable names.
      *
-     * @param $name    The name of the variable to return.
-     * @param $default The default value to use if this variable has never been set.
+     * @param string $name    The name of the variable to return.
+     * @param mixed  $default The default value to use if this variable has never been set.
      *
      * @return mixed   The value of the variable.
      */
@@ -47,8 +53,9 @@ abstract class OAuth2Client
      *
      * To avoid problems, always use lower case for persistent variable names.
      *
-     * @param $name  The name of the variable to set.
-     * @param $value The value to set.
+     * @param string $name  The name of the variable to set.
+     * @param mixed  $value The value to set.
+     *
      * @return $this The client (for chained calls of this method)
      */
     public function setVariable($name, $value)
@@ -69,18 +76,18 @@ abstract class OAuth2Client
      * Initialize a Drupal OAuth2.0 Application.
      *
      * @param array $config An associative array as below:
-     *   - base_uri: The base URI for the OAuth2.0 endpoints.
-     *   - code: (optional) The authorization code.
-     *   - username: (optional) The username.
-     *   - password: (optional) The password.
-     *   - client_id: (optional) The application ID.
-     *   - client_secret: (optional) The application secret.
-     *   - authorize_uri: (optional) The end-user authorization endpoint URI.
-     *   - access_token_uri: (optional) The token endpoint URI.
-     *   - services_uri: (optional) The services endpoint URI.
-     *   - cookie_support: (optional) true to enable cookie support.
-     *   - base_domain: (optional) The domain for the cookie.
-     *   - file_upload_support: (optional) true if file uploads are enabled.
+     *                      - base_uri: The base URI for the OAuth2.0 endpoints.
+     *                      - code: (optional) The authorization code.
+     *                      - username: (optional) The username.
+     *                      - password: (optional) The password.
+     *                      - client_id: (optional) The application ID.
+     *                      - client_secret: (optional) The application secret.
+     *                      - authorize_uri: (optional) The end-user authorization endpoint URI.
+     *                      - access_token_uri: (optional) The token endpoint URI.
+     *                      - services_uri: (optional) The services endpoint URI.
+     *                      - cookie_support: (optional) true to enable cookie support.
+     *                      - base_domain: (optional) The domain for the cookie.
+     *                      - file_upload_support: (optional) true if file uploads are enabled.
      */
     public function __construct($config = array())
     {
@@ -90,20 +97,25 @@ abstract class OAuth2Client
 
         // Use predefined OAuth2.0 params, or get it from $_REQUEST.
         foreach (array('code', 'username', 'password') as $name) {
-            if (isset($config[$name]))
+            if (isset($config[$name])) {
                 $this->setVariable($name, $config[$name]);
-            else if (isset($_REQUEST[$name]) && !empty($_REQUEST[$name]))
-                $this->setVariable($name, $_REQUEST[$name]);
+            } else {
+                if (isset($_REQUEST[$name]) && !empty($_REQUEST[$name])) {
+                    $this->setVariable($name, $_REQUEST[$name]);
+                }
+            }
             unset($config[$name]);
         }
 
         // Endpoint URIs.
         foreach (array('authorize_uri', 'access_token_uri', 'services_uri') as $name) {
-            if (isset($config[$name]))
-                if (substr($config[$name], 0, 4) == "http")
+            if (isset($config[$name])) {
+                if (substr($config[$name], 0, 4) == "http") {
                     $this->setVariable($name, $config[$name]);
-                else
+                } else {
                     $this->setVariable($name, $this->getVariable('base_uri') . $config[$name]);
+                }
+            }
             unset($config[$name]);
         }
 
@@ -129,16 +141,16 @@ abstract class OAuth2Client
      * your own server-side implementation.
      *
      * @param $accessToken (optional) A valid access token in associative array as below:
-     *   - accessToken: A valid accessToken generated by OAuth2.0
-     *     authorization endpoint.
-     *   - expires_in: (optional) A valid expires_in generated by OAuth2.0
-     *     authorization endpoint.
-     *   - refresh_token: (optional) A valid refresh_token generated by OAuth2.0
-     *     authorization endpoint.
-     *   - scope: (optional) A valid scope generated by OAuth2.0
-     *     authorization endpoint.
+     *                     - accessToken: A valid accessToken generated by OAuth2.0
+     *                     authorization endpoint.
+     *                     - expires_in: (optional) A valid expires_in generated by OAuth2.0
+     *                     authorization endpoint.
+     *                     - refresh_token: (optional) A valid refresh_token generated by OAuth2.0
+     *                     authorization endpoint.
+     *                     - scope: (optional) A valid scope generated by OAuth2.0
+     *                     authorization endpoint.
      *
-     *  @return A valid session object in associative array for setup cookie, and null if not able to generate it with custom method.
+     * @return string|null A valid session object in associative array for setup cookie, and null if not able to generate it with custom method.
      */
     protected function getSessionObject($accessToken = null)
     {
@@ -148,10 +160,13 @@ abstract class OAuth2Client
         if (!empty($accessToken) && isset($accessToken['access_token'])) {
             $session['access_token'] = $accessToken['access_token'];
             $session['base_domain'] = $this->getVariable('base_domain', self::DEFAULT_BASE_DOMAIN);
-            $session['expires'] = isset($accessToken['expires_in']) ? time() + $accessToken['expires_in'] : time() + $this->getVariable('expires_in', self::DEFAULT_EXPIRES_IN);
+            $session['expires'] = isset($accessToken['expires_in']) ? time() + $accessToken['expires_in'] : time(
+                ) + $this->getVariable('expires_in', self::DEFAULT_EXPIRES_IN);
             $session['refresh_token'] = isset($accessToken['refresh_token']) ? $accessToken['refresh_token'] : '';
             $session['scope'] = isset($accessToken['scope']) ? $accessToken['scope'] : '';
-            $session['secret'] = md5(base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid())));
+            $session['secret'] = md5(
+                base64_encode(pack('N6', mt_rand(), mt_rand(), mt_rand(), mt_rand(), mt_rand(), uniqid()))
+            );
 
             // Provide our own signature.
             $sig = self::generateSignature(
@@ -187,11 +202,11 @@ abstract class OAuth2Client
      * Assume server reply in JSON object and always decode during return. If
      * you hope to issue a raw query, please use makeRequest().
      *
-     * @param $path   The target path, relative to base_path/service_uri or an absolute URI.
-     * @param $method (optional) The HTTP method (default 'GET').
-     * @param $params (optional The GET/POST parameters.
+     * @param string $path   The target path, relative to base_path/service_uri or an absolute URI.
+     * @param string $method (optional) The HTTP method (default 'GET').
+     * @param array  $params (optional The GET/POST parameters.
      *
-     * @return        The JSON decoded response object.
+     * @return string The JSON decoded response object.
      *
      * @throws OAuth2Exception
      */
@@ -209,11 +224,14 @@ abstract class OAuth2Client
             }
         }
 
-        $result = json_decode($this->makeOAuth2Request(
-            $this->getUri($path),
-            $method,
-            $params
-        ), true);
+        $result = json_decode(
+            $this->makeOAuth2Request(
+                $this->getUri($path),
+                $method,
+                $params
+            ),
+            true
+        );
 
         // Results are returned, errors are thrown.
         if (is_array($result) && isset($result['error'])) {
@@ -221,7 +239,8 @@ abstract class OAuth2Client
             switch ($e->getType()) {
                 // OAuth 2.0 Draft 10 style.
                 case 'invalid_token':
-                    $this->setSession(null);
+                    $this->setSession(null); // TODO: what is this?!?!
+                    break;
                 default:
                     $this->setSession(null);
             }
@@ -235,14 +254,16 @@ abstract class OAuth2Client
 
     /**
      * Default options for cURL.
+     *
+     * @var array
      */
     public static $CURL_OPTS = array(
         CURLOPT_CONNECTTIMEOUT => 10,
         CURLOPT_RETURNTRANSFER => true,
-        CURLOPT_HEADER         => true,
-        CURLOPT_TIMEOUT        => 60,
-        CURLOPT_USERAGENT      => 'oauth2-draft-v10',
-        CURLOPT_HTTPHEADER     => array("Accept: application/json"),
+        CURLOPT_HEADER => true,
+        CURLOPT_TIMEOUT => 60,
+        CURLOPT_USERAGENT => 'oauth2-draft-v10',
+        CURLOPT_HTTPHEADER => array("Accept: application/json"),
     );
 
     /**
@@ -251,7 +272,7 @@ abstract class OAuth2Client
      * @param $session     (optional) The session object to be set. null if hope to frush existing session object.
      * @param $writeCookie (optional) true if a cookie should be written. This value is ignored if cookie support has been disabled.
      *
-     * @return The current OAuth2.0 client-side instance.
+     * @return self The current OAuth2.0 client-side instance.
      */
     public function setSession($session = null, $writeCookie = true)
     {
@@ -267,11 +288,10 @@ abstract class OAuth2Client
     /**
      * Get the session object.
      *
-     * This will automatically look for a signed session via custom method,
-     * OAuth2.0 grant type with authorization_code, OAuth2.0 grant type with
-     * password, or cookie that we had already setup.
+     * This will automatically look for a signed session via custom method, OAuth2.0 grant type with authorization_code,
+     * OAuth2.0 grant type with password, or cookie that we had already setup.
      *
-     * @return The valid session object with OAuth2.0 infomration, and null if not able to discover any cases.
+     * @return array|null The valid session object with OAuth2.0 information, and null if not able to discover any cases.
      */
     public function getSession()
     {
@@ -292,7 +312,10 @@ abstract class OAuth2Client
 
             // grant_type == password.
             if (!$session && $this->getVariable('username') && $this->getVariable('password')) {
-                $access_token = $this->getAccessTokenFromPassword($this->getVariable('username'), $this->getVariable('password'));
+                $access_token = $this->getAccessTokenFromPassword(
+                    $this->getVariable('username'),
+                    $this->getVariable('password')
+                );
                 $session = $this->getSessionObject($access_token);
                 $session = $this->validateSessionObject($session);
             }
@@ -302,12 +325,15 @@ abstract class OAuth2Client
                 $cookie_name = $this->getSessionCookieName();
                 if (isset($_COOKIE[$cookie_name])) {
                     $session = array();
-                    parse_str(trim(
-                        get_magic_quotes_gpc()
-                            ? stripslashes($_COOKIE[$cookie_name])
-                            : $_COOKIE[$cookie_name],
-                        '"'
-                    ), $session);
+                    parse_str(
+                        trim(
+                            get_magic_quotes_gpc()
+                                ? stripslashes($_COOKIE[$cookie_name])
+                                : $_COOKIE[$cookie_name],
+                            '"'
+                        ),
+                        $session
+                    );
                     $session = $this->validateSessionObject($session);
                     // Write only if we need to delete a invalid session cookie.
                     $write_cookie = empty($session);
@@ -326,7 +352,7 @@ abstract class OAuth2Client
      * This will trigger getSession() and so we MUST initialize with required
      * configuration.
      *
-     * @return The valid OAuth2.0 access token, and null if not exists in session.
+     * @return string|null The valid OAuth2.0 access token, and null if not exists in session.
      */
     public function getAccessToken()
     {
@@ -341,55 +367,65 @@ abstract class OAuth2Client
      * This function will only be activated if both access token URI, client
      * identifier and client secret are setup correctly.
      *
-     * @param $code Authorization code issued by authorization server's authorization endpoint.
+     * @param string $code Authorization code issued by authorization server's authorization endpoint.
      *
-     * @return A valid OAuth2.0 JSON decoded access token in associative array, and null if not enough parameters or JSON decode failed.
+     * @return string A valid OAuth2.0 JSON decoded access token in associative array, and null if not enough parameters or JSON decode failed.
      */
     private function getAccessTokenFromAuthorizationCode($code)
     {
-        if ($this->getVariable('access_token_uri') && $this->getVariable('client_id') && $this->getVariable('client_secret')) {
-            return json_decode($this->makeRequest(
-                $this->getVariable('access_token_uri'),
-                'POST',
-                array(
-                    'grant_type' => 'authorization_code',
-                    'client_id' => $this->getVariable('client_id'),
-                    'client_secret' => $this->getVariable('client_secret'),
-                    'code' => $code,
-                    'redirect_uri' => $this->getCurrentUri(),
-                )
-            ), true);
+        if ($this->getVariable('access_token_uri') && $this->getVariable('client_id') && $this->getVariable(
+                'client_secret'
+            )
+        ) {
+            return json_decode(
+                $this->makeRequest(
+                    $this->getVariable('access_token_uri'),
+                    'POST',
+                    array(
+                        'grant_type' => 'authorization_code',
+                        'client_id' => $this->getVariable('client_id'),
+                        'client_secret' => $this->getVariable('client_secret'),
+                        'code' => $code,
+                        'redirect_uri' => $this->getCurrentUri(),
+                    )
+                ),
+                true
+            );
         }
 
         return null;
     }
 
     /**
-     * Get access token from OAuth2.0 token endpoint with basic user
-     * credentials.
+     * Get access token from OAuth2.0 token endpoint with basic user credentials.
      *
-     * This function will only be activated if both username and password
-     * are setup correctly.
+     * This function will only be activated if both username and password are setup correctly.
      *
-     * @param $username Username to be check with.
-     * @param $password Password to be check with.
+     * @param string $username Username to be check with.
+     * @param string $password Password to be check with.
      *
-     * @return          A valid OAuth2.0 JSON decoded access token in associative array, and null if not enough parameters or JSON decode failed.
+     * @return array|null A valid OAuth2.0 JSON decoded access token in associative array, and null if not enough parameters or JSON decode failed.
      */
     private function getAccessTokenFromPassword($username, $password)
     {
-        if ($this->getVariable('access_token_uri') && $this->getVariable('client_id') && $this->getVariable('client_secret')) {
-            return json_decode($this->makeRequest(
-                $this->getVariable('access_token_uri'),
-                'POST',
-                array(
-                    'grant_type' => 'password',
-                    'client_id' => $this->getVariable('client_id'),
-                    'client_secret' => $this->getVariable('client_secret'),
-                    'username' => $username,
-                    'password' => $password,
-                )
-            ), true);
+        if ($this->getVariable('access_token_uri') && $this->getVariable('client_id') && $this->getVariable(
+                'client_secret'
+            )
+        ) {
+            return json_decode(
+                $this->makeRequest(
+                    $this->getVariable('access_token_uri'),
+                    'POST',
+                    array(
+                        'grant_type' => 'password',
+                        'client_id' => $this->getVariable('client_id'),
+                        'client_secret' => $this->getVariable('client_secret'),
+                        'username' => $username,
+                        'password' => $password,
+                    )
+                ),
+                true
+            );
         }
 
         return null;
@@ -403,17 +439,18 @@ abstract class OAuth2Client
      * just ignore setup with "oauth_token" and handle the API call AS-IS, and
      * so may issue a plain API call without OAuth2.0 protection.
      *
-     * @param $path   The target path, relative to base_path/service_uri or an absolute URI.
-     * @param $method (optional) The HTTP method (default 'GET').
-     * @param $params (optional The GET/POST parameters.
+     * @param string $path   The target path, relative to base_path/service_uri or an absolute URI.
+     * @param string $method (optional) The HTTP method (default 'GET').
+     * @param array  $params (optional The GET/POST parameters.
      *
-     * @return         The JSON decoded response object.
+     * @return string The JSON decoded response object.
      *
      * @throws OAuth2Exception
      */
     protected function makeOAuth2Request($path, $method = 'GET', $params = array())
     {
-        if ((!isset($params['oauth_token']) || empty($params['oauth_token'])) && $oauth_token = $this->getAccessToken()) {
+        if ((!isset($params['oauth_token']) || empty($params['oauth_token'])) && $oauth_token = $this->getAccessToken()
+        ) {
             $params['oauth_token'] = $oauth_token;
         }
 
@@ -426,18 +463,19 @@ abstract class OAuth2Client
      * This method can be overriden by subclasses if developers want to do
      * fancier things or use something other than cURL to make the request.
      *
-     * @param $path   The target path, relative to base_path/service_uri or an absolute URI.
-     * @param string $method (optional) The HTTP method (default 'GET').
-     * @param array $params (optional The GET/POST parameters.
-     * @param $ch (optional) An initialized curl handle
+     * @param string        $path   The target path, relative to base_path/service_uri or an absolute URI.
+     * @param string        $method (optional) The HTTP method (default 'GET').
+     * @param array         $params (optional The GET/POST parameters.
+     * @param resource|null $ch     (optional) An initialized curl handle
      *
      * @throws OAuth2Exception
-     * @return The JSON decoded response object.
+     * @return string The JSON decoded response object.
      */
     protected function makeRequest($path, $method = 'GET', $params = array(), $ch = null)
     {
-        if (!$ch)
+        if (!$ch) {
             $ch = curl_init();
+        }
 
         $opts = self::$CURL_OPTS;
         if ($params) {
@@ -471,8 +509,11 @@ abstract class OAuth2Client
 
         if (curl_errno($ch) == 60) { // CURLE_SSL_CACERT
             error_log('Invalid or no certificate authority found, using bundled information');
-            curl_setopt($ch, CURLOPT_CAINFO,
-                                    dirname(__FILE__) . '/fb_ca_chain_bundle.crt');
+            curl_setopt(
+                $ch,
+                CURLOPT_CAINFO,
+                dirname(__FILE__) . '/fb_ca_chain_bundle.crt'
+            );
             $result = curl_exec($ch);
         }
 
@@ -518,7 +559,7 @@ abstract class OAuth2Client
     /**
      * The name of the cookie that contains the session object.
      *
-     * @return The cookie name.
+     * @return string The cookie name.
      */
     private function getSessionCookieName()
     {
@@ -531,12 +572,13 @@ abstract class OAuth2Client
      * It does not use the currently stored session - you need to explicitly
      * pass it in.
      *
-     * @param $session The session to use for setting the cookie.
+     * @param array|null $session The session to use for setting the cookie.
      */
     protected function setCookieFromSession($session = null)
     {
-        if (!$this->getVariable('cookie_support'))
+        if (!$this->getVariable('cookie_support')) {
             return;
+        }
 
         $cookie_name = $this->getSessionCookieName();
         $value = 'deleted';
@@ -545,40 +587,46 @@ abstract class OAuth2Client
         if ($session) {
             $value = '"' . http_build_query($session, null, '&') . '"';
             $base_domain = isset($session['base_domain']) ? $session['base_domain'] : $base_domain;
-            $expires = isset($session['expires']) ? $session['expires'] : time() + $this->getVariable('expires_in', self::DEFAULT_EXPIRES_IN);
+            $expires = isset($session['expires']) ? $session['expires'] : time() + $this->getVariable(
+                    'expires_in',
+                    self::DEFAULT_EXPIRES_IN
+                );
         }
 
         // Prepend dot if a domain is found.
-        if ($base_domain)
+        if ($base_domain) {
             $base_domain = '.' . $base_domain;
+        }
 
         // If an existing cookie is not set, we dont need to delete it.
-        if ($value == 'deleted' && empty($_COOKIE[$cookie_name]))
+        if ($value == 'deleted' && empty($_COOKIE[$cookie_name])) {
             return;
+        }
 
-        if (headers_sent())
+        if (headers_sent()) {
             error_log('Could not set cookie. Headers already sent.');
-        else
+        } else {
             setcookie($cookie_name, $value, $expires, '/', $base_domain);
+        }
     }
 
     /**
      * Validates a session_version = 3 style session object.
      *
-     * @param $session The session object.
+     * @param array $session The session object.
      *
-     * @return The session object if it validates, null otherwise.
+     * @return array|null The session object if it validates, null otherwise.
      */
     protected function validateSessionObject($session)
     {
         // Make sure some essential fields exist.
         if (is_array($session) && isset($session['access_token']) && isset($session['sig'])) {
             // Validate the signature.
-            $session_without_sig = $session;
-            unset($session_without_sig['sig']);
+            $sessionWithoutSig = $session;
+            unset($sessionWithoutSig['sig']);
 
             $expected_sig = self::generateSignature(
-                $session_without_sig,
+                $sessionWithoutSig,
                 $this->getVariable('client_secret')
             );
 
@@ -619,7 +667,7 @@ abstract class OAuth2Client
     /**
      * Returns the Current URL.
      *
-     * @return The current URL.
+     * @return string The current URL.
      */
     protected function getCurrentUri()
     {
@@ -641,7 +689,7 @@ abstract class OAuth2Client
 
         // Use port if non default.
         $port = isset($parts['port']) &&
-            (($protocol === 'http://' && $parts['port'] !== 80) || ($protocol === 'https://' && $parts['port'] !== 443))
+        (($protocol === 'http://' && $parts['port'] !== 80) || ($protocol === 'https://' && $parts['port'] !== 443))
             ? ':' . $parts['port'] : '';
 
         // Rebuild.
@@ -660,14 +708,17 @@ abstract class OAuth2Client
     {
         $url = $this->getVariable('services_uri') ? $this->getVariable('services_uri') : $this->getVariable('base_uri');
 
-        if (!empty($path))
-            if (substr($path, 0, 4) == "http")
+        if (!empty($path)) {
+            if (substr($path, 0, 4) == "http") {
                 $url = $path;
-            else
+            } else {
                 $url = rtrim($url, '/') . '/' . ltrim($path, '/');
+            }
+        }
 
-        if (!empty($params))
+        if (!empty($params)) {
             $url .= '?' . http_build_query($params, null, '&');
+        }
 
         return $url;
     }
@@ -675,8 +726,8 @@ abstract class OAuth2Client
     /**
      * Generate a signature for the given params and secret.
      *
-     * @param $params The parameters to sign.
-     * @param $secret The secret to sign with.
+     * @param array  $params The parameters to sign.
+     * @param string $secret The secret to sign with.
      *
      * @return string The generated signature
      */

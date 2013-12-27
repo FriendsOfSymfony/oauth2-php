@@ -14,13 +14,15 @@ class OAuth2Exception extends \Exception
 {
     /**
      * The result from the API server that represents the exception information.
+     *
+     * @var array
      */
     protected $result;
 
     /**
      * Make a new API Exception with the given result.
      *
-     * @param $result The result from the API server.
+     * @param array $result The result from the API server.
      */
     public function __construct($result)
     {
@@ -44,7 +46,7 @@ class OAuth2Exception extends \Exception
     /**
      * Return the associated result object returned by the API server.
      *
-     * @return The result from the API server.
+     * @return array The result from the API server.
      */
     public function getResult()
     {
@@ -55,7 +57,7 @@ class OAuth2Exception extends \Exception
      * Returns the associated type for the error. This will default to
      * 'Exception' when a type is not available.
      *
-     * @return The type for the error.
+     * @return string The type for the error.
      */
     public function getType()
     {

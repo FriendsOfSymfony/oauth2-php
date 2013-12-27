@@ -11,6 +11,11 @@ namespace OAuth2;
  */
 class OAuth2RedirectException extends OAuth2ServerException
 {
+    /**
+     * Redirect URI
+     *
+     * @var string
+     */
     protected $redirectUri;
 
     /**
@@ -31,11 +36,12 @@ class OAuth2RedirectException extends OAuth2ServerException
         if ($state) {
             $this->errorData['state'] = $state;
         }
-
     }
 
     /**
      * Redirect the user agent.
+     *
+     * @return array
      *
      * @ingroup oauth2_section_4
      */
@@ -51,8 +57,8 @@ class OAuth2RedirectException extends OAuth2ServerException
     /**
      * Build the absolute URI based on supplied URI and parameters.
      *
-     * @param $uri    An absolute URI.
-     * @param $params Parameters to be append as GET.
+     * @param string $uri    An absolute URI.
+     * @param array  $params Parameters to be append as GET.
      *
      * @return string An absolute URI with supplied parameters.
      *

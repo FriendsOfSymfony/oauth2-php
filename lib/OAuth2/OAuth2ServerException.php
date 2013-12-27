@@ -2,17 +2,21 @@
 
 namespace OAuth2;
 
-use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * OAuth2 errors that require termination of OAuth2 due to
- * an error.
- *
+ * OAuth2 errors that require termination of OAuth2 due to an error.
  */
-class OAuth2ServerException extends Exception
+class OAuth2ServerException extends \Exception
 {
+    /**
+     * @var string
+     */
     protected $httpCode;
+
+    /**
+     * @var array
+     */
     protected $errorData = array();
 
     /**
@@ -31,6 +35,8 @@ class OAuth2ServerException extends Exception
     }
 
     /**
+     * Get error description
+     *
      * @return string
      */
     public function getDescription()
@@ -39,6 +45,8 @@ class OAuth2ServerException extends Exception
     }
 
     /**
+     * Get HTTP code
+     *
      * @return string
      */
     public function getHttpCode()
@@ -48,6 +56,8 @@ class OAuth2ServerException extends Exception
 
     /**
      * Get HTTP Error Response
+     *
+     * @return Response
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5.1
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5.2
@@ -66,6 +76,8 @@ class OAuth2ServerException extends Exception
     /**
      * Get HTTP Error Response headers
      *
+     * @return array
+     *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5.2
      *
      * @ingroup oauth2_error
@@ -79,19 +91,27 @@ class OAuth2ServerException extends Exception
         );
     }
 
+    /**
+     * Get response body as JSON string
+     *
+     * @return string
+     */
     public function getResponseBody()
     {
         return json_encode($this->errorData);
     }
 
+    /**
+     * Outputs response
+     */
     public function sendHttpResponse()
     {
         $this->getHttpResponse()->send();
-        exit;
+        exit; // TODO: refactor out this piece of code
     }
 
     /**
-     * @see Exception::__toString()
+     * @see \Exception::__toString()
      */
     public function __toString()
     {
