@@ -16,9 +16,8 @@ require 'lib/bootstrap.php';
 
 $oauth = new OAuth2(new OAuth2StoragePDO(newPDO()));
 try {
-  $response = $oauth->grantAccessToken();
-  $response->send();
-}
-catch (OAuth2ServerException $oauthError) {
-  $oauthError->getHttpResponse()->send();
+    $response = $oauth->grantAccessToken();
+    $response->send();
+} catch (OAuth2ServerException $oauthError) {
+    $oauthError->getHttpResponse()->send();
 }

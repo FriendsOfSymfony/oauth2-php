@@ -33,15 +33,16 @@ class OAuth2StorageStub implements IOAuth2Storage
         return $this->clients;
     }
 
-    public function checkClientCredentials(IOAuth2Client $client, $client_secret = NULL)
+    public function checkClientCredentials(IOAuth2Client $client, $clientSecret = null)
     {
-        return $client->checkSecret($client_secret);
+        return $client->checkSecret($clientSecret);
     }
 
-    public function createAccessToken($oauth_token, IOAuth2Client $client, $data, $expires, $scope = NULL)
+    public function createAccessToken($oauthToken, IOAuth2Client $client, $data, $expires, $scope = null)
     {
-        $token = new OAuth2AccessToken($client->getPublicId(), $oauth_token, $expires, $scope, $data);
-        $this->accessTokens[$oauth_token] = $token;
+        $token = new OAuth2AccessToken($client->getPublicId(), $oauthToken, $expires, $scope, $data);
+
+        $this->accessTokens[$oauthToken] = $token;
     }
 
     public function getAccessToken($oauth_token)
@@ -66,8 +67,8 @@ class OAuth2StorageStub implements IOAuth2Storage
         $this->allowedGrantTypes = $types;
     }
 
-    public function checkRestrictedGrantType(IOAuth2Client $client, $grant_type)
+    public function checkRestrictedGrantType(IOAuth2Client $client, $grantType)
     {
-        return in_array($grant_type, $this->allowedGrantTypes);
+        return in_array($grantType, $this->allowedGrantTypes);
     }
 }

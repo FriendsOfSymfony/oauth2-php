@@ -17,10 +17,10 @@ require 'lib/bootstrap.php';
 $oauth = new OAuth2(new OAuth2StoragePDO(newPDO()));
 
 try {
-  $token = $oauth->getBearerToken();
-  $oauth->verifyAccessToken($token);
+    $token = $oauth->getBearerToken();
+    $oauth->verifyAccessToken($token);
 } catch (OAuth2ServerException $oauthError) {
-  $oauthError->sendHttpResponse();
+    $oauthError->sendHttpResponse();
 }
 
 // With a particular scope, you'd do:
@@ -29,10 +29,10 @@ try {
 ?>
 
 <html>
-  <head>
+    <head>
     <title>Hello!</title>
-  </head>
-  <body>
+    </head>
+    <body>
     <p>This is a secret.</p>
-  </body>
+    </body>
 </html>

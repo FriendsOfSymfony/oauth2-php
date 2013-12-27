@@ -28,9 +28,9 @@ class OAuth2GrantCodeStub extends OAuth2StorageStub implements IOAuth2GrantCode
         return end($this->authCodes);
     }
 
-    public function createAuthCode($code, IOAuth2Client $client, $data, $redirect_uri, $expires, $scope = NULL)
+    public function createAuthCode($code, IOAuth2Client $client, $data, $redirectUri, $expires, $scope = null)
     {
-        $token = new OAuth2AuthCode($client->getPublicId(), $code, $expires, $scope, $data, $redirect_uri);
+        $token = new OAuth2AuthCode($client->getPublicId(), $code, $expires, $scope, $data, $redirectUri);
         $this->authCodes[$code] = $token;
     }
 

@@ -2,6 +2,6 @@
 
 namespace OAuth2\Model;
 
-interface IOAuth2AccessToken extends IOAuth2Token {
+interface IOAuth2AccessToken extends IOAuth2Token
+{
 }
-

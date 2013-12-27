@@ -3,18 +3,19 @@
 namespace OAuth2;
 
 /**
- * Storage engines that support the "Implicit"
- * grant type should implement this interface
+ * Storage engines that support the "Implicit" grant type should implement this interface
  *
  * @author Dave Rochwerger <catch.dave@gmail.com>
- * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
+ *
+ * @see    http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
  */
-interface IOAuth2GrantImplicit extends IOAuth2Storage {
-
+interface IOAuth2GrantImplicit extends IOAuth2Storage
+{
     /**
      * The Implicit grant type supports a response type of "token".
      *
      * @var string
+     *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-1.4.2
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.2
      */

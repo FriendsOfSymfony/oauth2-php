@@ -2,7 +2,6 @@
 
 namespace OAuth2;
 
-
 /**
  * OAuth2.0 draft v10 exception handling.
  *
@@ -11,78 +10,80 @@ namespace OAuth2;
  *
  * @sa <a href="https://github.com/facebook/php-sdk">Facebook PHP SDK</a>.
  */
-class OAuth2Exception extends \Exception {
+class OAuth2Exception extends \Exception
+{
+    /**
+     * The result from the API server that represents the exception information.
+     *
+     * @var array
+     */
+    protected $result;
 
-  /**
-   * The result from the API server that represents the exception information.
-   */
-  protected $result;
+    /**
+     * Make a new API Exception with the given result.
+     *
+     * @param array $result The result from the API server.
+     */
+    public function __construct($result)
+    {
+        $this->result = $result;
 
-  /**
-   * Make a new API Exception with the given result.
-   *
-   * @param $result
-   *   The result from the API server.
-   */
-  public function __construct($result) {
-    $this->result = $result;
+        $code = isset($result['code']) ? $result['code'] : 0;
 
-    $code = isset($result['code']) ? $result['code'] : 0;
+        if (isset($result['error'])) {
+            // OAuth 2.0 Draft 10 style
+            $message = $result['error'];
+        } elseif (isset($result['message'])) {
+            // cURL style
+            $message = $result['message'];
+        } else {
+            $message = 'Unknown Error. Check getResult()';
+        }
 
-    if (isset($result['error'])) {
-      // OAuth 2.0 Draft 10 style
-      $message = $result['error'];
+        parent::__construct($message, $code);
     }
-    elseif (isset($result['message'])) {
-      // cURL style
-      $message = $result['message'];
-    }
-    else {
-      $message = 'Unknown Error. Check getResult()';
+
+    /**
+     * Return the associated result object returned by the API server.
+     *
+     * @return array The result from the API server.
+     */
+    public function getResult()
+    {
+        return $this->result;
     }
 
-    parent::__construct($message, $code);
-  }
+    /**
+     * Returns the associated type for the error. This will default to
+     * 'Exception' when a type is not available.
+     *
+     * @return string The type for the error.
+     */
+    public function getType()
+    {
+        if (isset($this->result['error'])) {
+            $message = $this->result['error'];
+            if (is_string($message)) {
+                // OAuth 2.0 Draft 10 style
+                return $message;
+            }
+        }
 
-  /**
-   * Return the associated result object returned by the API server.
-   *
-   * @returns
-   *   The result from the API server.
-   */
-  public function getResult() {
-    return $this->result;
-  }
-
-  /**
-   * Returns the associated type for the error. This will default to
-   * 'Exception' when a type is not available.
-   *
-   * @return
-   *   The type for the error.
-   */
-  public function getType() {
-    if (isset($this->result['error'])) {
-      $message = $this->result['error'];
-      if (is_string($message)) {
-        // OAuth 2.0 Draft 10 style
-        return $message;
-      }
+        return 'Exception';
     }
-    return 'Exception';
-  }
 
-  /**
-   * To make debugging easier.
-   *
-   * @returns
-   *   The string representation of the error.
-   */
-  public function __toString() {
-    $str = $this->getType() . ': ';
-    if ($this->code != 0) {
-      $str .= $this->code . ': ';
+    /**
+     * To make debugging easier.
+     *
+     * @return string The string representation of the error.
+     */
+    public function __toString()
+    {
+        $str = $this->getType() . ': ';
+        if ($this->code != 0) {
+            $str .= $this->code . ': ';
+        }
+
+        return $str . $this->message;
     }
-    return $str . $this->message;
-  }
 }
