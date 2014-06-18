@@ -1452,7 +1452,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_5
      */
-    private function getJsonHeaders()
+    protected function getJsonHeaders()
     {
         return array(
             'Content-Type' => 'application/json',
