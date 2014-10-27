@@ -633,11 +633,20 @@ class OAuth2
      */
     protected function getBearerTokenFromFormEncodedBody(Request $request, $removeFromRequest)
     {
-        if (false === $request->server->has('CONTENT_TYPE')) {
-            return null;
+        $contentType = null;
+
+        if ($request->server->has('CONTENT_TYPE')) {
+            $contentType = $request->server->get('CONTENT_TYPE');
         }
 
-        $contentType = $request->server->get('CONTENT_TYPE');
+        // The php's built-in web server stores the Content-Type header value in HTTP_CONTENT_TYPE field.
+        if ($request->server->has('HTTP_CONTENT_TYPE')) {
+            $contentType = $request->server->get('HTTP_CONTENT_TYPE');
+        }
+
+        if (empty($contentType)) {
+            return null;
+        }
 
         if (!preg_match('/^application\/x-www-form-urlencoded([\s|;].*)?$/', $contentType)) {
             return null;
