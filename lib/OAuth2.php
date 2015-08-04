@@ -243,7 +243,7 @@ class OAuth2
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.5
      */
-    const GRANT_TYPE_REGEXP = '#^(authorization_code|token|password|client_credentials|refresh_token|https?://.*)$#';
+    const GRANT_TYPE_REGEXP = '#^(authorization_code|token|password|client_credentials|refresh_token|https?://.+|urn:.+)$#';
 
     /**
      * @}
@@ -823,12 +823,8 @@ class OAuth2
                 $stored = $this->grantAccessTokenRefreshToken($client, $input);
                 break;
             default:
-                if (filter_var($input["grant_type"], FILTER_VALIDATE_URL)) {
-                    // returns: true || array('scope' => scope)
-                    $stored = $this->grantAccessTokenExtension($client, $inputData, $authHeaders);
-                } else {
-                    throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_REQUEST, 'Invalid grant_type parameter or parameter missing');
-                }
+                // returns: true || array('scope' => scope) || array('data' => data, 'scope' => scope)
+                $stored = $this->grantAccessTokenExtension($client, $inputData, $authHeaders);
         }
 
         if (!is_array($stored)) {
@@ -1001,8 +997,7 @@ class OAuth2
         if (!($this->storage instanceof IOAuth2GrantExtension)) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
         }
-        $uri = filter_var($inputData["grant_type"], FILTER_VALIDATE_URL);
-        $stored = $this->storage->checkGrantExtension($client, $uri, $inputData, $authHeaders);
+        $stored = $this->storage->checkGrantExtension($client, $inputData["grant_type"], $inputData, $authHeaders);
 
         if ($stored === false) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT);
