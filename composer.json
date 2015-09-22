@@ -1,5 +1,5 @@
 {
-    "name": "sergioenrique/oauth2-php",
+    "name": "friendsofsymfony/oauth2-php",
     "type": "library",
     "description": "OAuth2 library",
     "license": "MIT",
@@ -30,7 +30,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1"
+            "dev-master": "1.1.x.1-dev"
         }
     }
 }
