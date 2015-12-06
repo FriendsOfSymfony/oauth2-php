@@ -796,7 +796,7 @@ class OAuth2
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
         }
 
-        if ($this->storage->checkClientCredentials($client, $clientCredentials[1]) === false) {
+        if (($this->storage->checkClientCredentials($client, $clientCredentials[1]) === false) && ($input["grant_type"]!=self::GRANT_TYPE_USER_CREDENTIALS)) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
         }
 
