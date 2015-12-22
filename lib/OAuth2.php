@@ -423,7 +423,7 @@ class OAuth2
             self::CONFIG_ENFORCE_STATE => false,
             self::CONFIG_SUPPORTED_SCOPES => null,
             // This is expected to be passed in on construction. Scopes can be an aribitrary string.
-            self::CONFIG_RESPONSE_EXTRA_HEADERS => array(),
+            self::CONFIG_RESPONSE_EXTRA_HEADERS => null,
         );
     }
 
@@ -768,6 +768,10 @@ class OAuth2
         if ($request === null) {
             $request = Request::createFromGlobals();
         }
+
+        // Show accepted headers if method is OPTIONS
+        if ($request->getMethod() === 'OPTIONS')
+            return new Response('', 200, $this->getJsonHeaders());
 
         // Input data by default can be either POST or GET
         if ($request->getMethod() === 'POST') {
@@ -1477,7 +1481,7 @@ class OAuth2
      */
     private function getJsonHeaders()
     {
-        $headers = $this->getVariable(self::CONFIG_RESPONSE_EXTRA_HEADERS, array());
+        $headers = json_decode($this->getVariable(self::CONFIG_RESPONSE_EXTRA_HEADERS), true);
         $headers += array(
             'Content-Type' => 'application/json',
             'Cache-Control' => 'no-store',

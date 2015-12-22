@@ -4,7 +4,7 @@
     "description": "OAuth2 library",
     "license": "MIT",
     "keywords": ["oauth", "oauth2"],
-    "homepage": "https://github.com/FriendsOfSymfony/oauth2-php",
+    "homepage": "https://github.com/SergioEnrique/oauth2-php",
     "authors": [
         {
             "name": "Arnaud Le Blanc",
@@ -30,7 +30,7 @@
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.1.x-dev"
+            "dev-master": "1.1.x.1-dev"
         }
     }
 }
