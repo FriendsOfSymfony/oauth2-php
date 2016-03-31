@@ -704,9 +704,9 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
             'grant_type' => $grantType,
             'client_id' => $clientId,
             'client_secret' => $clientSecret,
-            'jwt' => \OAuth2\Tests\Fixtures\OAuth2GrantExtensionJwtBearer::encodeJwt([
+            'jwt' => \OAuth2\Tests\Fixtures\OAuth2GrantExtensionJwtBearer::encodeJwt(array(
                 'sub' => $subject,
-            ]),
+            )),
         )));
 
         $this->assertSame(array(
@@ -722,6 +722,8 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
 
         $token = $stub->getLastAccessToken();
         $this->assertSame('cid', $token->getClientId());
+        $data = $token->getData();
+        $this->assertSame($subject, $data['sub']);
     }
 
 

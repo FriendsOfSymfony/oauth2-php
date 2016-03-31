@@ -35,7 +35,9 @@ class OAuth2GrantExtensionJwtBearer extends OAuth2StorageStub implements IOAuth2
             return false;
         }
 
-        return $decodedJwtStruct;
+        return array(
+            'data' => $decodedJwtStruct,
+        );
     }
 
     public function setExpectedSubject($sub)
