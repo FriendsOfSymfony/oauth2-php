@@ -1270,7 +1270,7 @@ class OAuth2
      * @return Response
      * @ingroup oauth2_section_4
      */
-    private function createRedirectUriCallbackResponse($redirectUri, $params)
+    protected function createRedirectUriCallbackResponse($redirectUri, $params)
     {
         return new Response('', 302, array(
             'Location' => $this->buildUri($redirectUri, $params),
@@ -1287,7 +1287,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_4
      */
-    private function buildUri($uri, $params)
+    protected function buildUri($uri, $params)
     {
         $parse_url = parse_url($uri);
 
@@ -1388,7 +1388,7 @@ class OAuth2
      * @return string
      * @ingroup oauth2_section_4
      */
-    private function createAuthCode(IOAuth2Client $client, $data, $redirectUri, $scope = null)
+    protected function createAuthCode(IOAuth2Client $client, $data, $redirectUri, $scope = null)
     {
         $code = $this->genAuthCode();
         $this->storage->createAuthCode(
@@ -1486,7 +1486,7 @@ class OAuth2
      *
      * @ingroup oauth2_section_5
      */
-    private function getJsonHeaders()
+    protected function getJsonHeaders()
     {
         $headers = $this->getVariable(self::CONFIG_RESPONSE_EXTRA_HEADERS, array());
         $headers += array(
