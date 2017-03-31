@@ -219,6 +219,59 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
     }
 
     /**
+     * Tests OAuth2->grantAccessToken() with manual set of lifetime
+     */
+    public function testGrantAccessTokenWithLifetime()
+    {
+        $request = new Request(
+            array(
+                'grant_type' => OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS,
+                'client_id' => 'my_little_app',
+                'client_secret' => 'b',
+                'lifetime' => '30',
+            )
+        );
+
+        $storage = new OAuth2StorageStub;
+        $storage->addClient(new OAuth2Client('my_little_app', 'b'));
+        $storage->setAllowedGrantTypes(array(OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS));
+
+        $this->fixture = new OAuth2($storage);
+
+        $response = $this->fixture->grantAccessToken($request);
+
+        // Successful token grant will return a JSON encoded token WITHOUT a refresh token:
+        $this->assertRegExp('/^{"access_token":"[^"]+","expires_in":30,"token_type":"bearer","scope":null}$/', $response->getContent());
+    }
+
+
+    /**
+     * Tests OAuth2->grantAccessToken() with manual set of lifetime
+     */
+    public function testGrantAccessTokenWithInvalidLifetime()
+    {
+        $request = new Request(
+            array(
+                'grant_type' => OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS,
+                'client_id' => 'my_little_app',
+                'client_secret' => 'b',
+                'lifetime' => '99999999',
+            )
+        );
+
+        $storage = new OAuth2StorageStub;
+        $storage->addClient(new OAuth2Client('my_little_app', 'b'));
+        $storage->setAllowedGrantTypes(array(OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS));
+
+        $this->fixture = new OAuth2($storage);
+
+        $response = $this->fixture->grantAccessToken($request);
+
+        // Successful token grant will return a JSON encoded token WITHOUT a refresh token:
+        $this->assertRegExp('/^{"access_token":"[^"]+","expires_in":3600,"token_type":"bearer","scope":null}$/', $response->getContent());
+    }
+
+    /**
      * Tests OAuth2->grantAccessToken() with Auth code grant
      *
      */
@@ -573,7 +626,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $stub->setAllowedGrantTypes(array('authorization_code', 'password'));
 
         $oauth2 = new OAuth2($stub);
-        
+
         try {
             $response = $oauth2->grantAccessToken(new Request(array(
                 'grant_type' => 'password',

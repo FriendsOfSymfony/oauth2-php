@@ -382,7 +382,7 @@ class OAuth2
      * @var string
      */
     const TRANSPORT_QUERY    = 'query';
-    const TRANSPORT_FRAGMENT = 'fragment';
+    const TRANSPORT_FRAGMENT = self::TRANSPORT_QUERY;
 
     /**
      * @}
@@ -763,6 +763,7 @@ class OAuth2
             "username" => array("flags" => FILTER_REQUIRE_SCALAR),
             "password" => array("flags" => FILTER_REQUIRE_SCALAR),
             "refresh_token" => array("flags" => FILTER_REQUIRE_SCALAR),
+            "lifetime" => array("flags" => FILTER_SANITIZE_NUMBER_INT),
         );
 
         if ($request === null) {
@@ -841,10 +842,18 @@ class OAuth2
             $stored = array();
         }
 
+        $accessTokenLifetime = $this->getVariable(self::CONFIG_ACCESS_LIFETIME);
+        if (array_key_exists('lifetime', $input)) {
+            $inputLifetime = (int)$input['lifetime'];
+            if ($inputLifetime > 0 && $inputLifetime < $accessTokenLifetime) {
+                $accessTokenLifetime = $inputLifetime;
+            }
+        }
+
         // if no scope provided to check against $input['scope'] then application defaults are set
         // if no data is provided than null is set
         $stored += array('scope' => $this->getVariable(self::CONFIG_SUPPORTED_SCOPES, null), 'data' => null,
-                         'access_token_lifetime' => $this->getVariable(self::CONFIG_ACCESS_LIFETIME),
+                         'access_token_lifetime' => $accessTokenLifetime,
                          'issue_refresh_token' => true, 'refresh_token_lifetime' => $this->getVariable(self::CONFIG_REFRESH_LIFETIME));
 
         $scope = $stored['scope'];

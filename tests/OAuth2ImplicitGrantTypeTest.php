@@ -12,19 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * The actual token ID is irrelevant, so choose one:
-     * @var string
-     */
-    private $tokenId = 'my_token';
-
-    /**
      * Tests OAuth2->grantAccessToken() with implicit
      *
      */
     public function testGrantAccessTokenWithGrantImplicit()
     {
-        //$this->fixture->grantAccessToken(/* parameters */);
-
         $stub = new OAuth2ImplicitStub();
         $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
         $oauth2 = new OAuth2($stub);
@@ -38,7 +30,7 @@ class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
                 'state' => '42',
         )));
 
-        $this->assertRegExp('/^http:\/\/www.example.com\/\?foo=bar#state=42&access_token=[^"]+&expires_in=3600&token_type=bearer$/', $response->headers->get('Location'));
+        $this->assertRegExp('/^http:\/\/www\.example\.com\/\?foo=bar&state=42&access_token=[^"]+&expires_in=3600&token_type=bearer$/', $response->headers->get('Location'));
     }
 
     /**
@@ -47,8 +39,6 @@ class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
      */
     public function testRejectedAccessTokenWithGrantImplicit()
     {
-        //$this->fixture->grantAccessToken(/* parameters */);
-
         $stub = new OAuth2ImplicitStub();
         $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
         $oauth2 = new OAuth2($stub);
@@ -67,7 +57,7 @@ class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
             $this->assertSame('access_denied', $e->getMessage());
             $this->assertSame('The user denied access to your application', $e->getDescription());
             $this->assertSame(array(
-                'Location' => 'http://www.example.com/?foo=bar#error=access_denied&error_description=The+user+denied+access+to+your+application&state=42',
+                'Location' => 'http://www.example.com/?foo=bar&error=access_denied&error_description=The+user+denied+access+to+your+application&state=42',
             ), $e->getResponseHeaders());
         }
     }
