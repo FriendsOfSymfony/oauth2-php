@@ -888,12 +888,8 @@ class OAuth2
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_GRANT, "Code doesn't exist or is invalid for the client");
         }
 
-        // Validate the redirect URI. If a redirect URI has been provided on input, it must be validated
-        if ($input["redirect_uri"] && !$this->validateRedirectUri(
-                $input["redirect_uri"],
-                $authCode->getRedirectUri()
-            )
-        ) {
+        // Validate the redirect URI. If a redirect URI has been provided on input, it must be identical
+        if ($input["redirect_uri"] && $input["redirect_uri"] === $authCode->getRedirectUri()) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_REDIRECT_URI_MISMATCH, "The redirect URI is missing or do not match");
         }
 
@@ -1501,7 +1497,7 @@ class OAuth2
      * Internal method for validating redirect URI supplied
      *
      * @param string       $inputUri
-     * @param string|array $storedUris
+     * @param array $storedUris
      *
      * @return bool
      */
@@ -1523,10 +1519,6 @@ class OAuth2
             if (preg_match('#/\.\.?(/|$)#', $path)) {
                 return false;
             }
-        }
-
-        if (!is_array($storedUris)) {
-            $storedUris = array($storedUris);
         }
 
         foreach ($storedUris as $storedUri) {
