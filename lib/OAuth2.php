@@ -270,11 +270,11 @@ class OAuth2
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4.1.2
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5.2
      */
-    const HTTP_FOUND = '302 Found';
-    const HTTP_BAD_REQUEST = '400 Bad Request';
-    const HTTP_UNAUTHORIZED = '401 Unauthorized';
-    const HTTP_FORBIDDEN = '403 Forbidden';
-    const HTTP_UNAVAILABLE = '503 Service Unavailable';
+    const HTTP_FOUND = 302;
+    const HTTP_BAD_REQUEST = 400;
+    const HTTP_UNAUTHORIZED = 401;
+    const HTTP_FORBIDDEN = 403;
+    const HTTP_UNAVAILABLE = 503;
 
     /**
      * @}
