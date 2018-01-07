@@ -67,7 +67,7 @@ class OAuth2
      *
      * @var string
      */
-    protected $oldRefreshToken = null;
+    protected $oldRefreshToken;
 
     /**
      * Keep track of the used auth code. So we can mark it
@@ -75,7 +75,7 @@ class OAuth2
      *
      * @var IOAuth2AuthCode
      */
-    protected $usedAuthCode = null;
+    protected $usedAuthCode;
 
     /**
      * Default access token lifetime.
@@ -644,11 +644,9 @@ class OAuth2
      */
     protected function getBearerTokenFromFormEncodedBody(Request $request, $removeFromRequest)
     {
-        if (false === $request->server->has('CONTENT_TYPE')) {
+        if (!$contentType = $request->server->get('CONTENT_TYPE')) {
             return null;
         }
-
-        $contentType = $request->server->get('CONTENT_TYPE');
 
         if (!preg_match('/^application\/x-www-form-urlencoded([\s|;].*)?$/', $contentType)) {
             return null;
@@ -672,11 +670,9 @@ class OAuth2
 
         $token = $parameters[self::TOKEN_PARAM_NAME];
 
-        if ($removeFromRequest) {
-            // S2 request content is immutable, so we can't do nothing more than crippled implementation below...
-            if (true === $request->request->has(self::TOKEN_PARAM_NAME)) {
-                $request->request->remove(self::TOKEN_PARAM_NAME);
-            }
+        // S2 request content is immutable, so we can't do nothing more than crippled implementation below...
+        if ($removeFromRequest && $request->request->has(self::TOKEN_PARAM_NAME)) {
+            $request->request->remove(self::TOKEN_PARAM_NAME);
         }
 
         return $token;
@@ -726,7 +722,7 @@ class OAuth2
             $availableScope = explode(' ', trim($availableScope));
         }
 
-        return (count(array_diff($requiredScope, $availableScope)) == 0);
+        return 0 === count(array_diff($requiredScope, $availableScope));
     }
 
     // Access token granting (Section 4).
@@ -823,7 +819,7 @@ class OAuth2
                 $stored = $this->grantAccessTokenRefreshToken($client, $input);
                 break;
             default:
-                if (substr($input["grant_type"], 0, 4) !== 'urn:'
+                if (false === strpos($input['grant_type'], 'urn:')
                     && !filter_var($input["grant_type"], FILTER_VALIDATE_URL)
                 ) {
                     throw new OAuth2ServerException(
@@ -847,10 +843,10 @@ class OAuth2
                          'access_token_lifetime' => $this->getVariable(self::CONFIG_ACCESS_LIFETIME),
                          'issue_refresh_token' => true, 'refresh_token_lifetime' => $this->getVariable(self::CONFIG_REFRESH_LIFETIME));
 
-        $scope = $stored['scope'];
+        $scope = isset($stored["scope"]) ? $stored['scope'] : null;
         if ($input["scope"]) {
             // Check scope, if provided
-            if (!isset($stored["scope"]) || !$this->checkScope($input["scope"], $stored["scope"])) {
+            if (!$scope || !$this->checkScope($input["scope"], $scope)) {
                 throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_SCOPE, 'An unsupported scope was requested.');
             }
             $scope = $input["scope"];
@@ -918,7 +914,7 @@ class OAuth2
      */
     protected function grantAccessTokenUserCredentials(IOAuth2Client $client, array $input)
     {
-        if (!($this->storage instanceof IOAuth2GrantUser)) {
+        if (!$this->storage instanceof IOAuth2GrantUser) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
         }
 
@@ -945,7 +941,7 @@ class OAuth2
      */
     protected function grantAccessTokenClientCredentials(IOAuth2Client $client, array $input, array $clientCredentials)
     {
-        if (!($this->storage instanceof IOAuth2GrantClient)) {
+        if (!$this->storage instanceof IOAuth2GrantClient) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
         }
 
@@ -975,7 +971,7 @@ class OAuth2
      */
     protected function grantAccessTokenRefreshToken(IOAuth2Client $client, array $input)
     {
-        if (!($this->storage instanceof IOAuth2RefreshTokens)) {
+        if (!$this->storage instanceof IOAuth2RefreshTokens) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
         }
 
@@ -1004,7 +1000,7 @@ class OAuth2
 
     protected function grantAccessTokenExtension(IOAuth2Client $client, array $inputData, array $authHeaders)
     {
-        if (!($this->storage instanceof IOAuth2GrantExtension)) {
+        if (!$this->storage instanceof IOAuth2GrantExtension) {
             throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_UNSUPPORTED_GRANT_TYPE);
         }
 
@@ -1050,15 +1046,17 @@ class OAuth2
         // Basic Authentication is used
         if (!empty($authHeaders['PHP_AUTH_USER'])) {
             return array($authHeaders['PHP_AUTH_USER'], $authHeaders['PHP_AUTH_PW']);
-        } elseif (empty($inputData['client_id'])) { // No credentials were specified
-            throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'Client id was not found in the headers or body');
-        } else {
-            // This method is not recommended, but is supported by specification
-            $client_id = $inputData['client_id'];
-            $client_secret = isset($inputData['client_secret']) ? $inputData['client_secret'] : null;
-
-            return array($client_id, $client_secret);
         }
+
+        if (empty($inputData['client_id'])) { // No credentials were specified
+            throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'Client id was not found in the headers or body');
+        }
+
+        // This method is not recommended, but is supported by specification
+        $client_id = $inputData['client_id'];
+        $client_secret = isset($inputData['client_secret']) ? $inputData['client_secret'] : null;
+
+        return array($client_id, $client_secret);
     }
 
     // End-user/client Authorization (Section 2 of IETF Draft).
@@ -1178,14 +1176,12 @@ class OAuth2
                 throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_REDIRECT_URI_MISMATCH, 'The redirect URI is mandatory and was not supplied.');
             }
 
-            $redirectUri = current($client->getRedirectUris());
+            return current($client->getRedirectUris());
+        }
 
-        } else {
-            // Only need to validate if redirect_uri is provided on input and stored
-            if (!$this->validateRedirectUri($redirectUri, $client->getRedirectUris())) {
-                throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_REDIRECT_URI_MISMATCH, 'The redirect URI provided does not match registered URI(s).');
-            }
-
+        // Only need to validate if redirect_uri is provided on input and stored
+        if (!$this->validateRedirectUri($redirectUri, $client->getRedirectUris())) {
+            throw new OAuth2ServerException(self::HTTP_BAD_REQUEST, self::ERROR_REDIRECT_URI_MISMATCH, 'The redirect URI provided does not match registered URI(s).');
         }
 
         return $redirectUri;
@@ -1294,9 +1290,9 @@ class OAuth2
         // Add our params to the parsed uri
         foreach ($params as $k => $v) {
             if (isset($parse_url[$k])) {
-                $parse_url[$k] .= "&" . http_build_query($v);
+                $parse_url[$k] .= "&" . http_build_query($v, '', '&');
             } else {
-                $parse_url[$k] = http_build_query($v);
+                $parse_url[$k] = http_build_query($v, '', '&');
             }
         }
 
