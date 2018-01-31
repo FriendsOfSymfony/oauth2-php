@@ -35,7 +35,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
         $response = $this->fixture->grantAccessToken($request);
 
         // Successful token grant will return a JSON encoded token:
-        $this->assertRegexp('/{"access_token":".*","expires_in":\d+,"token_type":"bearer"/', $response->getContent());
+        $this->assertRegexp('/{"access_token":".*","expires_in":\d+,"token_type":"Bearer"/', $response->getContent());
     }
 
     /**
@@ -58,7 +58,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
         $response = $this->fixture->grantAccessToken($request);
 
         // Successful token grant will return a JSON encoded token:
-        $this->assertRegexp('/{"access_token":".*","expires_in":\d+,"token_type":"bearer"/', $response->getContent());
+        $this->assertRegexp('/{"access_token":".*","expires_in":\d+,"token_type":"Bearer"/', $response->getContent());
     }
 
 // Utility methods

@@ -256,7 +256,7 @@ class OAuth2
      *
      * @see http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7.1
      */
-    const TOKEN_TYPE_BEARER = 'bearer';
+    const TOKEN_TYPE_BEARER = 'Bearer';
     const TOKEN_TYPE_MAC = 'mac'; // Currently unsupported
 
     /**
