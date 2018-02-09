@@ -1050,7 +1050,7 @@ class OAuth2
     protected function getClientCredentials(array $inputData, array $authHeaders)
     {
         // Basic Authentication is used
-        if (!empty($authHeaders['PHP_AUTH_USER'])) {
+        if (!empty($authHeaders['PHP_AUTH_USER'] && empty($inputData['client_id']))) {
             return array($authHeaders['PHP_AUTH_USER'], $authHeaders['PHP_AUTH_PW']);
         } elseif (empty($inputData['client_id'])) { // No credentials were specified
             throw new OAuth2ServerException(Response::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'Client id was not found in the headers or body');
