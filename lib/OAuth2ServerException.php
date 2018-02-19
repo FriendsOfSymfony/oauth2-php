@@ -68,7 +68,7 @@ class OAuth2ServerException extends \Exception
     {
         return new Response(
             $this->getResponseBody(),
-            $this->getHttpCode(),
+            (int) $this->getHttpCode(),
             $this->getResponseHeaders()
         );
     }
