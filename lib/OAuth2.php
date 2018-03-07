@@ -753,6 +753,11 @@ class OAuth2
      */
     public function grantAccessToken(Request $request = null)
     {
+        if (0 === strpos($request->headers->get('Content-Type'), 'application/json')) {
+            $data = json_decode($request->getContent(), true);
+            $request->request->replace(is_array($data) ? $data : array());
+        }
+        
         $filters = array(
             "grant_type" => array(
                 "filter" => FILTER_VALIDATE_REGEXP,
