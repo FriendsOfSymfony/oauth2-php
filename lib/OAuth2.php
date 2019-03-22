@@ -7,6 +7,14 @@ use OAuth2\Model\IOAuth2AuthCode;
 use OAuth2\Model\IOAuth2Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use OAuth2\Event\GenerateTokenEvent;
+use OAuth2\Event\PreGrantAccessTokenEvent;
+use OAuth2\Event\PostGrantAccessTokenEvent;
+use OAuth2\Event\PreGrantAuthorizationEvent;
+use OAuth2\Event\PostGrantAuthorizationEvent;
+use OAuth2\EventListener\GenerateRandomTokenListener;
 
 /**
  * @mainpage
@@ -32,6 +40,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Aaron Parecki <aaron@parecki.com>
  * @author Edison Wong <hswong3i@pantarei-design.com>
  * @author David Rochwerger <catch.dave@gmail.com>
+ * @author Charles J. C. Elling <tlakomistli.anakmosatlani@gmail.com>
  *
  * @see    http://code.google.com/p/oauth2-php/
  * @see    https://github.com/quizlet/oauth2-php
@@ -46,6 +55,7 @@ use Symfony\Component\HttpFoundation\Response;
  * @author Updated to draft v10 by Aaron Parecki <aaron@parecki.com>.
  * @author Debug, coding style clean up and documented by Edison Wong <hswong3i@pantarei-design.com>.
  * @author Refactored (including separating from raw POST/GET) and updated to draft v20 by David Rochwerger <catch.dave@gmail.com>.
+ * @author Add event dispatch for easier customization by Charles J. C. Elling <tlakomistli.anakmosatlani@gmail.com>.
  */
 class OAuth2
 {
@@ -61,6 +71,13 @@ class OAuth2
      */
     protected $storage;
 
+    /**
+     * Event dispatcher system
+     * 
+     * @var EventDispatcherInterface
+     */
+    protected $eventDispatcher;
+    
     /**
      * Keep track of the old refresh token. So we can unset
      * the old refresh tokens when a new one is issued.
@@ -395,10 +412,16 @@ class OAuth2
      *
      * @param IOAuth2Storage $storage
      * @param array          $config An associative array as below of config options. See CONFIG_* constants.
+     * @param EventDispatcherInterface $eventDispatcher Event dispatcher system 
      */
-    public function __construct(IOAuth2Storage $storage, $config = array())
+    public function __construct(IOAuth2Storage $storage, $config = array(), EventDispatcherInterface $eventDispatcher = null)
     {
         $this->storage = $storage;
+        
+        if($eventDispatcher === null) {
+            $eventDispatcher = new EventDispatcher();
+        }
+        $this->eventDispatcher = $eventDispatcher;
 
         // Configuration options
         $this->setDefaultOptions();
@@ -805,6 +828,13 @@ class OAuth2
         if (!$this->storage->checkRestrictedGrantType($client, $input["grant_type"])) {
             throw new OAuth2ServerException(Response::HTTP_BAD_REQUEST, self::ERROR_UNAUTHORIZED_CLIENT, 'The grant type is unauthorized for this client_id');
         }
+        
+        // Trigger PRE_GRANT_ACCESS_TOKEN event
+        $event = new PreGrantAccessTokenEvent($request, $inputData, $input, $client);
+        $this->eventDispatcher->dispatch(OAuth2Events::PRE_GRANT_ACCESS_TOKEN, $event);
+        $inputData = $event->getData();
+        $input = $event->getInput();
+        $client = $event->getClient();
 
         // Do the granting
         switch ($input["grant_type"]) {
@@ -859,6 +889,12 @@ class OAuth2
         }
 
         $token = $this->createAccessToken($client, $stored['data'], $scope, $stored['access_token_lifetime'], $stored['issue_refresh_token'], $stored['refresh_token_lifetime']);
+        
+        // Trigger POST_GRANT_ACCESS_TOKEN event
+        $event = new PostGrantAccessTokenEvent($token, $request, $inputData, $input, $client);
+        $this->eventDispatcher->dispatch(OAuth2Events::POST_GRANT_ACCESS_TOKEN, $event);
+        $token = $event->getToken();
+        
         return new Response(json_encode($token), 200, $this->getJsonHeaders());
     }
 
@@ -1235,6 +1271,12 @@ class OAuth2
         $params += array(
             'state' => null,
         );
+        
+        // Trigger PRE_GRANT_AUTHORIZATION event
+        $event = new PreGrantAuthorizationEvent($request, $params, $isAuthorized);
+        $this->eventDispatcher->dispatch(OAuth2Events::PRE_GRANT_AUTHORIZATION,$event);
+        $params = $event->getParams();
+        $isAuthorized = $event->isIsAuthorized();
 
         $result = array();
 
@@ -1255,7 +1297,14 @@ class OAuth2
                 $result[self::TRANSPORT_FRAGMENT] += $this->createAccessToken($params["client"], $data, $scope, null, false);
             }
         }
-
+        
+        
+        // Trigger POST_GRANT_AUTHORIZATION event
+        $event = new PostGrantAuthorizationEvent($result, $request, $params, $isAuthorized);
+        $this->eventDispatcher->dispatch(OAuth2Events::POST_GRANT_AUTHORIZATION,$event);
+        $params = $event->getParams();
+        $result = $event->getResult();
+        
         return $this->createRedirectUriCallbackResponse($params["redirect_uri"], $result);
     }
 
@@ -1333,9 +1382,22 @@ class OAuth2
      */
     public function createAccessToken(IOAuth2Client $client, $data, $scope = null, $access_token_lifetime = null, $issue_refresh_token = true, $refresh_token_lifetime = null)
     {
+        if($access_token_lifetime === null) {
+            $access_token_lifetime = $this->getVariable(self::CONFIG_ACCESS_LIFETIME);
+        }
+        
+        // Trigger GENERATE_ACCESS_TOKEN event
+        $event = new GenerateTokenEvent($client, $data, $scope, $access_token_lifetime);
+        $this->eventDispatcher->dispatch(OAuth2Events::GENERATE_ACCESS_TOKEN, $event);
+        
+        $accessToken = $event->getToken();
+        if(empty($accessToken)) {
+            $accessToken = $this->genAccessToken(); //rollback to default access token generation
+        }
+        
         $token = array(
-            "access_token" => $this->genAccessToken(),
-            "expires_in" => ($access_token_lifetime ?: $this->getVariable(self::CONFIG_ACCESS_LIFETIME)),
+            "access_token" => $accessToken,
+            "expires_in" => $access_token_lifetime,
             "token_type" => $this->getVariable(self::CONFIG_TOKEN_TYPE),
             "scope" => $scope,
         );
@@ -1344,18 +1406,32 @@ class OAuth2
             $token["access_token"],
             $client,
             $data,
-            time() + ($access_token_lifetime ?: $this->getVariable(self::CONFIG_ACCESS_LIFETIME)),
+            time() + $access_token_lifetime,
             $scope
         );
 
         // Issue a refresh token also, if we support them
         if ($this->storage instanceof IOAuth2RefreshTokens && $issue_refresh_token === true) {
-            $token["refresh_token"] = $this->genAccessToken();
+            
+            if($refresh_token_lifetime === null) {
+                $refresh_token_lifetime = $this->getVariable(self::CONFIG_REFRESH_LIFETIME);
+            }
+            
+            // Trigger GENERATE_REFRESH_TOKEN event
+            $event = new GenerateTokenEvent($client, $data, $scope, $refresh_token_lifetime);
+            $this->eventDispatcher->dispatch(OAuth2Events::GENERATE_REFRESH_TOKEN, $event);
+            
+            $refreshToken = $event->getToken();
+            if(empty($refreshToken)) {
+                $refreshToken = $this->genAccessToken(); //rollback to default refresh token generation
+            }
+            
+            $token["refresh_token"] = $refreshToken;
             $this->storage->createRefreshToken(
                 $token["refresh_token"],
                 $client,
                 $data,
-                time() + ($refresh_token_lifetime ?: $this->getVariable(self::CONFIG_REFRESH_LIFETIME)),
+                time() + $refresh_token_lifetime,
                 $scope
             );
 
@@ -1392,13 +1468,23 @@ class OAuth2
      */
     private function createAuthCode(IOAuth2Client $client, $data, $redirectUri, $scope = null)
     {
-        $code = $this->genAuthCode();
+        $auth_code_lifetime = $this->getVariable(self::CONFIG_AUTH_LIFETIME);
+        
+        // Trigger GENERATE_AUTH_CODE event
+        $event = new GenerateTokenEvent($client, $data, $scope, $auth_code_lifetime);
+        $this->eventDispatcher->dispatch(OAuth2Events::GENERATE_AUTH_CODE, $event);
+        
+        $code = $event->getToken();
+        if(empty($code)) {
+            $code = $this->genAuthCode(); //rollback to default access code generation
+        }
+        
         $this->storage->createAuthCode(
             $code,
             $client,
             $data,
             $redirectUri,
-            time() + $this->getVariable(self::CONFIG_AUTH_LIFETIME),
+            time() + $auth_code_lifetime,
             $scope
         );
 

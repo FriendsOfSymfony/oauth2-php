@@ -15,7 +15,15 @@ This version of oauth2-php is a fork of https://github.com/quizlet/oauth2-php wi
  - Uses [HttpFoundation](https://github.com/symfony/HttpFoundation) Request and Response for input/output
  - More testable design
  - Better test coverage
-
+ - Event dispatch for easier customization
+   - Use the *oauth2.pre.grant.authorization* event to modify the autorization parameters
+   - Use the *oauth2.generate.auth_code* event to customize the access token generation
+   - Use the *oauth2.post.grant.authorization* event to modify the autorization response variables
+   - Use the *oauth2.pre.grant.access_token* event to modify the grant access token parameters
+   - Use the *oauth2.generate.access_token* event to customize the access token generation
+   - Use the *oauth2.generate.refresh_token* event to customize the refresh token generation
+   - Use the *oauth2.post.grant.access_token* event to modify the grant access token response variables
+   
 (pull request is pending)
 
 https://github.com/quizlet/oauth2-php is a fork of http://code.google.com/p/oauth2-php/ updated against OAuth2.0 draft
