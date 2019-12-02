@@ -571,7 +571,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         $stub->setAllowedGrantTypes(array('authorization_code', 'password'));
 
         $oauth2 = new OAuth2($stub);
-        
+
         try {
             $oauth2->grantAccessToken(new Request(array(
                 'grant_type' => 'password',
@@ -756,7 +756,7 @@ class OAuth2Test extends PHPUnit_Framework_TestCase
         )));
 
         $this->assertSame(302, $response->getStatusCode());
-        $this->assertRegExp('#^http://www\.example\.com/\?foo=bar&state=42&code=#', $response->headers->get('location'));
+        $this->assertRegExp('#^http://www\.example\.com/\?foo=bar&state=42&grant_type=authorization_code&redirect_uri=http%3A%2F%2Fwww.example.com%2F%3Ffoo%3Dbar&client_id=blah&code=#', $response->headers->get('location'));
 
         $code = $stub->getLastAuthCode();
         $this->assertSame('blah', $code->getClientId());

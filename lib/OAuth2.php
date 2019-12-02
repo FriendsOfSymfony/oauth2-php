@@ -728,7 +728,10 @@ class OAuth2 implements IOAuth2
             throw new OAuth2ServerException(Response::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
         }
 
-        if ($this->storage->checkClientCredentials($client, $clientCredentials[1]) === false) {
+        // if grant type is auth code, client is validated in grantAccessTokenAuthCode()
+        if ($input['grant_type'] !== self::GRANT_TYPE_AUTH_CODE
+            && $this->storage->checkClientCredentials($client, $clientCredentials[1]) === false
+        ) {
             throw new OAuth2ServerException(Response::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
         }
 
@@ -1159,6 +1162,9 @@ class OAuth2 implements IOAuth2
         } else {
             if ($params["response_type"] === self::RESPONSE_TYPE_AUTH_CODE) {
                 $result[self::TRANSPORT_QUERY]['state'] = $params["state"];
+                $result[self::TRANSPORT_QUERY]["grant_type"] = self::GRANT_TYPE_AUTH_CODE;
+                $result[self::TRANSPORT_QUERY]["redirect_uri"] = $params["redirect_uri"];
+                $result[self::TRANSPORT_QUERY]["client_id"] = $params["client_id"];
                 $result[self::TRANSPORT_QUERY]["code"] = $this->createAuthCode(
                     $params["client"],
                     $data,
