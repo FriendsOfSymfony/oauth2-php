@@ -729,7 +729,9 @@ class OAuth2 implements IOAuth2
         }
 
         // if grant type is auth code, client is validated in grantAccessTokenAuthCode()
+        // and if grant type is refresh token, client secret is superfluous
         if ($input['grant_type'] !== self::GRANT_TYPE_AUTH_CODE
+            && $input['grant_type'] !== self::GRANT_TYPE_REFRESH_TOKEN
             && $this->storage->checkClientCredentials($client, $clientCredentials[1]) === false
         ) {
             throw new OAuth2ServerException(Response::HTTP_BAD_REQUEST, self::ERROR_INVALID_CLIENT, 'The client credentials are invalid');
