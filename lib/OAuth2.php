@@ -1538,7 +1538,7 @@ class OAuth2 implements IOAuth2
      protected function dispatch($eventName, $event = null) {
          $method = new \ReflectionMethod(EventDispatcher::class,"dispatch");
          $parameters =$method->getParameters();
-         if($parameters[0]->getType() == "object") {
+         if($parameters[0]->getName() == "event") {
              $this->eventDispatcher->dispatch($event, $eventName);
          } else {
              $this->eventDispatcher->dispatch($eventName, $event);
