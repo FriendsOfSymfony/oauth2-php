@@ -1,7 +1,7 @@
 <?php
 namespace OAuth2\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
  * 
  * @author Charles J. C Elling <tlakomistli.anakmosatlani@gmail.com>
  */
-class PreGrantAuthorizationEvent extends Event
+class PreGrantAuthorizationEvent extends GenericEvent
 {
     /**
      * HTTP request data
@@ -40,6 +40,7 @@ class PreGrantAuthorizationEvent extends Event
      */
     public function __construct(Request $request, array $params, $isAuthorized)
     {
+        parent::__construct();
         $this->request = $request;
         $this->params = $params;
         $this->isAuthorized = $isAuthorized;

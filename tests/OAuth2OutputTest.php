@@ -6,7 +6,7 @@ use OAuth2\Model\OAuth2Client;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * OAuth2 test cases that invovle capturing output.
+ * OAuth2 test cases that involve capturing output.
  */
 class OAuth2OutputTest extends PHPUnit_Framework_TestCase
 {
@@ -35,7 +35,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
         $response = $this->fixture->grantAccessToken($request);
 
         // Successful token grant will return a JSON encoded token:
-        $this->assertRegexp('/{"access_token":".*","expires_in":\d+,"token_type":"bearer"/', $response->getContent());
+        $this->assertRegExp('/{"access_token":".*","expires_in":\d+,"token_type":"bearer"/', $response->getContent());
     }
 
     /**
@@ -58,7 +58,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
         $response = $this->fixture->grantAccessToken($request);
 
         // Successful token grant will return a JSON encoded token:
-        $this->assertRegexp('/{"access_token":".*","expires_in":\d+,"token_type":"bearer"/', $response->getContent());
+        $this->assertRegExp('/{"access_token":".*","expires_in":\d+,"token_type":"bearer"/', $response->getContent());
     }
 
 // Utility methods
@@ -71,7 +71,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
     {
         $client = new OAuth2Client('my_little_app');
 
-        $mockStorage = $this->getMock($interfaceName);
+        $mockStorage = $this->getMockBuilder($interfaceName)->getMock();
         $mockStorage->expects($this->any())
             ->method('getClient')
             ->will($this->returnCallback(function ($id) use ($client) {
@@ -88,5 +88,4 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
 
          return $mockStorage;
     }
-
 }

@@ -1,6 +1,0 @@
-[submodule "vendor/Symfony/Component/ClassLoader"]
-	path = vendor/Symfony/Component/ClassLoader
-	url = git://github.com/symfony/ClassLoader.git
-[submodule "vendor/Symfony/Component/HttpFoundation"]
-	path = vendor/Symfony/Component/HttpFoundation
-	url = git://github.com/symfony/HttpFoundation.git

@@ -1,7 +1,7 @@
 <?php
 namespace OAuth2\Event;
 
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 use OAuth2\Model\IOAuth2Client;
 
 /**
@@ -10,7 +10,7 @@ use OAuth2\Model\IOAuth2Client;
  * @author Charles J. C Elling <tlakomistli.anakmosatlani@gmail.com>
  *
  */
-class GenerateTokenEvent extends Event
+class GenerateTokenEvent extends GenericEvent
 {
     /**
      * Client requesting the token
@@ -56,6 +56,7 @@ class GenerateTokenEvent extends Event
      */
     public function __construct(IOAuth2Client $client, $data, $scope = null, $token_lifetime = null) 
     {
+        parent::__construct();
         $this->client = $client;
         $this->data = $data;
         $this->scope = $scope;

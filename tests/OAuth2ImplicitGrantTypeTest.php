@@ -12,19 +12,11 @@ use Symfony\Component\HttpFoundation\Request;
 class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
 {
     /**
-     * The actual token ID is irrelevant, so choose one:
-     * @var string
-     */
-    private $tokenId = 'my_token';
-
-    /**
      * Tests OAuth2->grantAccessToken() with implicit
      *
      */
     public function testGrantAccessTokenWithGrantImplicit()
     {
-        //$this->fixture->grantAccessToken(/* parameters */);
-
         $stub = new OAuth2ImplicitStub();
         $stub->addClient(new OAuth2Client('blah', 'foo', array('http://www.example.com/')));
         $oauth2 = new OAuth2($stub);
@@ -56,7 +48,7 @@ class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
         $data = new \stdClass();
 
         try {
-            $response = $oauth2->finishClientAuthorization(false, $data, new Request(array(
+            $oauth2->finishClientAuthorization(false, $data, new Request(array(
                     'client_id' => 'blah',
                     'redirect_uri' => 'http://www.example.com/?foo=bar',
                     'state' => '42',

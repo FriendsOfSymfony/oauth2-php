@@ -57,7 +57,7 @@ use OAuth2\EventListener\GenerateRandomTokenListener;
  * @author Refactored (including separating from raw POST/GET) and updated to draft v20 by David Rochwerger <catch.dave@gmail.com>.
  * @author Add event dispatch for easier customization by Charles J. C. Elling <tlakomistli.anakmosatlani@gmail.com>.
  */
-class OAuth2
+class OAuth2 implements IOAuth2
 {
     /**
      * Array of persistent variables stored.
@@ -453,12 +453,7 @@ class OAuth2
     }
 
     /**
-     * Returns a persistent variable.
-     *
-     * @param string $name    The name of the variable to return.
-     * @param mixed  $default The default value to use if this variable has never been set.
-     *
-     * @return mixed   The value of the variable.
+     * {@inheritdoc}
      */
     public function getVariable($name, $default = null)
     {
@@ -468,12 +463,7 @@ class OAuth2
     }
 
     /**
-     * Sets a persistent variable.
-     *
-     * @param  string $name  The name of the variable to set.
-     * @param  mixed  $value The value to set.
-     *
-     * @return OAuth2 The application (for chained calls of this method)
+     * {@inheritdoc}
      */
     public function setVariable($name, $value)
     {
@@ -487,31 +477,7 @@ class OAuth2
     // Resource protecting (Section 5).
 
     /**
-     * Check that a valid access token has been provided.
-     * The token is returned (as an associative array) if valid.
-     *
-     * The scope parameter defines any required scope that the token must have.
-     * If a scope param is provided and the token does not have the required
-     * scope, we bounce the request.
-     *
-     * Some implementations may choose to return a subset of the protected
-     * resource (i.e. "public" data) if the user has not provided an access
-     * token or if the access token is invalid or expired.
-     *
-     * The IETF spec says that we should send a 401 Unauthorized header and
-     * bail immediately so that's what the defaults are set to. You can catch
-     * the exception thrown and behave differently if you like (log errors, allow
-     * public access for missing tokens, etc)
-     *
-     * @param string $tokenParam
-     * @param string $scope A space-separated string of required scope(s), if you want to check for scope.
-     *
-     * @throws OAuth2AuthenticateException
-     * @return IOAuth2AccessToken Token
-     *
-     * @see     http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-7
-     *
-     * @ingroup oauth2_section_7
+     * {@inheritdoc}
      */
     public function verifyAccessToken($tokenParam, $scope = null)
     {
@@ -543,28 +509,7 @@ class OAuth2
     }
 
     /**
-     * This is a convenience function that can be used to get the token, which can then
-     * be passed to verifyAccessToken(). The constraints specified by the draft are
-     * attempted to be adheared to in this method.
-     *
-     * As per the Bearer spec (draft 8, section 2) - there are three ways for a client
-     * to specify the bearer token, in order of preference: Authorization Header,
-     * POST and GET.
-     *
-     * NB: Resource servers MUST accept tokens via the Authorization scheme
-     * (http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2).
-     *
-     * @todo Should we enforce TLS/SSL in this function?
-     *
-     * @see  http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.1
-     * @see  http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.2
-     * @see  http://tools.ietf.org/html/draft-ietf-oauth-v2-bearer-08#section-2.3
-     *
-     * @param Request $request
-     * @param bool    $removeFromRequest
-     *
-     * @return string|null
-     * @throws OAuth2AuthenticateException
+     * {@inheritdoc}
      */
     public function getBearerToken(Request $request = null, $removeFromRequest = false)
     {
@@ -757,22 +702,7 @@ class OAuth2
     // Access token granting (Section 4).
 
     /**
-     * Grant or deny a requested access token.
-     *
-     * This would be called from the "/token" endpoint as defined in the spec.
-     * Obviously, you can call your endpoint whatever you want.
-     * Draft specifies that the authorization parameters should be retrieved from POST, but you can override to whatever method you like.
-     *
-     * @param  Request $request (optional) The request
-     *
-     * @return Response
-     * @throws OAuth2ServerException
-     *
-     * @see      http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
-     * @see      http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-10.6
-     * @see      http://tools.ietf.org/html/draft-ietf-oauth-v2-21#section-4.1.3
-     *
-     * @ingroup  oauth2_section_4
+     * {@inheritdoc}
      */
     public function grantAccessToken(Request $request = null)
     {
@@ -831,7 +761,7 @@ class OAuth2
         
         // Trigger PRE_GRANT_ACCESS_TOKEN event
         $event = new PreGrantAccessTokenEvent($request, $inputData, $input, $client);
-        $this->eventDispatcher->dispatch(OAuth2Events::PRE_GRANT_ACCESS_TOKEN, $event);
+        $this->dispatch(OAuth2Events::PRE_GRANT_ACCESS_TOKEN, $event);
         $inputData = $event->getData();
         $input = $event->getInput();
         $client = $event->getClient();
@@ -892,7 +822,7 @@ class OAuth2
         
         // Trigger POST_GRANT_ACCESS_TOKEN event
         $event = new PostGrantAccessTokenEvent($token, $request, $inputData, $input, $client);
-        $this->eventDispatcher->dispatch(OAuth2Events::POST_GRANT_ACCESS_TOKEN, $event);
+        $this->dispatch(OAuth2Events::POST_GRANT_ACCESS_TOKEN, $event);
         $token = $event->getToken();
         
         return new Response(json_encode($token), 200, $this->getJsonHeaders());
@@ -1230,22 +1160,7 @@ class OAuth2
     }
 
     /**
-     * Redirect the user appropriately after approval.
-     *
-     * After the user has approved or denied the access request the authorization server should call this function to
-     * redirect the user appropriately.
-     *
-     * @param bool        $isAuthorized true or false depending on whether the user authorized the access.
-     * @param mixed       $data         Application data
-     * @param Request     $request
-     * @param string|null $scope
-     *
-     * @throws OAuth2RedirectException
-     *
-     * @return Response
-     * @see      http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-4
-     *
-     * @ingroup  oauth2_section_4
+     * {@inheritdoc}
      */
     public function finishClientAuthorization($isAuthorized, $data = null, Request $request = null, $scope = null)
     {
@@ -1274,7 +1189,7 @@ class OAuth2
         
         // Trigger PRE_GRANT_AUTHORIZATION event
         $event = new PreGrantAuthorizationEvent($request, $params, $isAuthorized);
-        $this->eventDispatcher->dispatch(OAuth2Events::PRE_GRANT_AUTHORIZATION,$event);
+        $this->dispatch(OAuth2Events::PRE_GRANT_AUTHORIZATION,$event);
         $params = $event->getParams();
         $isAuthorized = $event->isIsAuthorized();
 
@@ -1301,7 +1216,7 @@ class OAuth2
         
         // Trigger POST_GRANT_AUTHORIZATION event
         $event = new PostGrantAuthorizationEvent($result, $request, $params, $isAuthorized);
-        $this->eventDispatcher->dispatch(OAuth2Events::POST_GRANT_AUTHORIZATION,$event);
+        $this->dispatch(OAuth2Events::POST_GRANT_AUTHORIZATION,$event);
         $params = $event->getParams();
         $result = $event->getResult();
         
@@ -1363,22 +1278,7 @@ class OAuth2
     }
 
     /**
-     * Handle the creation of access token, also issue refresh token if support.
-     *
-     * This belongs in a separate factory, but to keep it simple, I'm just keeping it here.
-     *
-     * @param IOAuth2Client $client
-     * @param mixed         $data
-     * @param string|null   $scope
-     * @param int|null      $access_token_lifetime How long the access token should live in seconds
-     * @param bool          $issue_refresh_token Issue a refresh tokeniIf true and the storage mechanism supports it
-     * @param int|null      $refresh_token_lifetime How long the refresh token should life in seconds
-     *
-     * @return array
-     *
-     * @see     http://tools.ietf.org/html/draft-ietf-oauth-v2-20#section-5
-     *
-     * @ingroup oauth2_section_5
+     * {@inheritdoc}
      */
     public function createAccessToken(IOAuth2Client $client, $data, $scope = null, $access_token_lifetime = null, $issue_refresh_token = true, $refresh_token_lifetime = null)
     {
@@ -1388,7 +1288,7 @@ class OAuth2
         
         // Trigger GENERATE_ACCESS_TOKEN event
         $event = new GenerateTokenEvent($client, $data, $scope, $access_token_lifetime);
-        $this->eventDispatcher->dispatch(OAuth2Events::GENERATE_ACCESS_TOKEN, $event);
+        $this->dispatch(OAuth2Events::GENERATE_ACCESS_TOKEN, $event);
         
         $accessToken = $event->getToken();
         if(empty($accessToken)) {
@@ -1419,7 +1319,7 @@ class OAuth2
             
             // Trigger GENERATE_REFRESH_TOKEN event
             $event = new GenerateTokenEvent($client, $data, $scope, $refresh_token_lifetime);
-            $this->eventDispatcher->dispatch(OAuth2Events::GENERATE_REFRESH_TOKEN, $event);
+            $this->dispatch(OAuth2Events::GENERATE_REFRESH_TOKEN, $event);
             
             $refreshToken = $event->getToken();
             if(empty($refreshToken)) {
@@ -1472,7 +1372,7 @@ class OAuth2
         
         // Trigger GENERATE_AUTH_CODE event
         $event = new GenerateTokenEvent($client, $data, $scope, $auth_code_lifetime);
-        $this->eventDispatcher->dispatch(OAuth2Events::GENERATE_AUTH_CODE, $event);
+        $this->dispatch(OAuth2Events::GENERATE_AUTH_CODE, $event);
         
         $code = $event->getToken();
         if(empty($code)) {
@@ -1619,10 +1519,30 @@ class OAuth2
 
         foreach ($storedUris as $storedUri) {
             if (strcasecmp(substr($inputUri, 0, strlen($storedUri)), $storedUri) === 0) {
-                return true;
+                if (parse_url($inputUri, PHP_URL_HOST) === parse_url($storedUri, PHP_URL_HOST) 
+                    && parse_url($inputUri, PHP_URL_PORT) === parse_url($storedUri, PHP_URL_PORT)
+                ) {
+                    return true;   
+                }
             }
         }
 
         return false;
+    }
+    
+    /**
+     * Wrap method for compatibility for EventDispatcher 3 to 5.0
+     * @param string $eventName
+     * @param object|null $event
+     */
+     protected function dispatch($eventName, $event = null) {
+         $method = new \ReflectionMethod(EventDispatcher::class,"dispatch");
+         $parameters =$method->getParameters();
+         if($parameters[0]->getType() == "object") {
+             $this->eventDispatcher->dispatch($event, $eventName);
+         } else {
+             $this->eventDispatcher->dispatch($eventName, $event);
+         }
+         
     }
 }

@@ -3,7 +3,7 @@ namespace OAuth2\Event;
 
 use Symfony\Component\HttpFoundation\Request;
 use OAuth2\Model\OAuth2Client;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Component\EventDispatcher\GenericEvent;
 
 /**
  * Pre grant acess token event data
@@ -11,7 +11,7 @@ use Symfony\Component\EventDispatcher\Event;
  * @author Charles J. C Elling <tlakomistli.anakmosatlani@gmail.com>
  *
  */
-class PreGrantAccessTokenEvent extends Event
+class PreGrantAccessTokenEvent extends GenericEvent
 {
     /**
      * HTTP request data
@@ -48,6 +48,7 @@ class PreGrantAccessTokenEvent extends Event
      */
     public function __construct(Request $request, array $data=[], $input=[], OAuth2Client $client = null)
     {
+        parent::__construct();
         $this->request = $request;
         $this->input = $input;
         $this->data  = $data;
