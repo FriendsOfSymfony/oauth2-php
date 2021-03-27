@@ -1,0 +1,43 @@
+name: "CI"
+
+on:
+    push:
+#        branches:
+#             - 'master'
+    pull_request:
+        branches:
+            - '**'
+
+jobs:
+    build:
+        name: PHP ${{ matrix.php }}
+        runs-on: 'ubuntu-latest'
+        strategy:
+            matrix:
+                php: [ '5.5', '5.6', '7.0', '7.2', '7.4' ]
+        steps:
+            -   uses: actions/checkout@v2
+
+            -   name: Setup PHP ${{ matrix.php }} and composer
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php }}
+                    coverage: none # disable xdebug, pcov
+                    tools: composer:v2
+
+            -   name: "Set composer cache directory"
+                id: composer-cache
+                run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            -   name: "Cache composer"
+                uses: actions/cache@v2.1.2
+                with:
+                    path: ${{ steps.composer-cache.outputs.dir }}
+                    key: ${{ runner.os }}-${{ matrix.php-version }}-composer-${{ hashFiles('composer.json') }}
+                    restore-keys: ${{ runner.os }}-${{ matrix.php-version }}-composer-
+
+            -   name: Install dependencies
+                run: composer install
+
+            -   name: Run CI
+                run: vendor/bin/phpunit
