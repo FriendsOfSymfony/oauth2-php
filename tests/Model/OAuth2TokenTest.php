@@ -4,7 +4,7 @@ namespace OAuth2\Tests\Model;
 
 use OAuth2\Model\OAuth2Token;
 
-class OAuth2TokenTest extends \PHPUnit_Framework_TestCase
+class OAuth2TokenTest extends \PHPUnit\Framework\TestCase
 {
     public function testConstruct()
     {

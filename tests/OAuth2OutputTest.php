@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * OAuth2 test cases that involve capturing output.
  */
-class OAuth2OutputTest extends PHPUnit_Framework_TestCase
+class OAuth2OutputTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var OAuth2
@@ -71,7 +71,7 @@ class OAuth2OutputTest extends PHPUnit_Framework_TestCase
     {
         $client = new OAuth2Client('my_little_app');
 
-        $mockStorage = $this->getMockBuilder($interfaceName)->getMock();
+        $mockStorage = $this->createMock($interfaceName);
         $mockStorage->expects($this->any())
             ->method('getClient')
             ->will($this->returnCallback(function ($id) use ($client) {

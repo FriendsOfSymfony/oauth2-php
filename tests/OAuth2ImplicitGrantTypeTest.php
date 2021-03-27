@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 /**
  * OAuth2 test case.
  */
-class OAuth2ImplicitGrantTypeTest extends PHPUnit_Framework_TestCase
+class OAuth2ImplicitGrantTypeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Tests OAuth2->grantAccessToken() with implicit

@@ -8,7 +8,7 @@ use OAuth2\Tests\Fixtures\OAuth2GrantUserStub;
 /**
  * Extra Headers test case.
  */
-class ExtraHeadersTest extends PHPUnit_Framework_TestCase
+class ExtraHeadersTest extends \PHPUnit\Framework\TestCase
 {
     public function testErrorResponseContainsExtraHeaders()
     {
