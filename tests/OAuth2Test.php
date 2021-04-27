@@ -1103,6 +1103,28 @@ class OAuth2Test extends \PHPUnit\Framework\TestCase
         }
     }
 
+    public function testSetTokenGenerator()
+    {
+        $request = new Request(
+            array('grant_type' => OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS, 'client_id' => 'my_little_app', 'client_secret' => 'b')
+        );
+
+        $storage = new OAuth2StorageStub;
+        $storage->addClient(new OAuth2Client('my_little_app', 'b'));
+        $storage->setAllowedGrantTypes(array(OAuth2::GRANT_TYPE_CLIENT_CREDENTIALS));
+
+        $tokenGenerator = $this->getMockBuilder('OAuth2\TokenGenerator\TokenGeneratorInterface')->getMock();
+        $tokenGenerator->expects($this->once())->method('genAccessToken')->willReturn('aa.bb.cc');
+
+        $this->fixture = new OAuth2($storage);
+        $this->fixture->setTokenGenerator($tokenGenerator);
+
+        $response = $this->fixture->grantAccessToken($request);
+
+        // Successful token grant will return a JSON encoded token WITHOUT a refresh token:
+        $this->assertRegExp('/^{"access_token":"aa\.bb\.cc","expires_in":[^"]+,"token_type":"bearer","scope":null}$/', $response->getContent());
+    }
+
     public function getTestGetBearerTokenData()
     {
         $data = array();
