@@ -822,7 +822,7 @@ class OAuth2 implements IOAuth2
 
         // Validate the redirect URI. If a redirect URI has been provided on input, it must be validated
         if ($input["redirect_uri"] && !$this->validateRedirectUri(
-                $input["redirect_uri"],
+                urldecode($input["redirect_uri"]),
                 $authCode->getRedirectUri()
             )
         ) {
